@@ -27,7 +27,7 @@ To configure your bot and to get it online on all the platforms  you need to sen
 }
 ```
 
-- `protocol`: required, `ws` or `http`.
+- `protocol`: protocol you are going to use, `ws` or `http`.
 - `webhook`: should contain an URL of your script, that will be triggered each time we receive any message from your users. Required only if `protocol` is `http`.
 
 Depending on the protocol chosen, the server responses with an object which contains URL to connect or post messages to:
@@ -49,25 +49,79 @@ In case of websockets:
 
 ## Messages
 
-- `channel`: channel id
-- `user`: user id
-- `type`: `text`, `file`, `link`, `picture`, `video`, `event`
-- `text`: message itself; if you want to mention some user place <@${userId}> within text; <@ME> for mentioning the bot itself
-- `url`: file URL
-- `mentions`: array of the user ids mentioned in the message; doesn't contain botId; in the `message.text` bot mention is marked as `<@ME>`
-- `mentioned`: bool, determines whether bot was mentioned in the message
-- `direct`: bool, if it's a direct message
-- `timestamp`: timestamp with milliseconds
+Botcamp transforms incoming messages from all the platforms, and unifies the format of them. Apart from the important information, you receive some helper properties to ease your work.
 
+- `channel`: *channel id string*. Channel id, where channel is a user or group of users.
+- `user`: *user id string*. User id, where user is the user, who sends a message, uploads a file, or initiates an event.
+- `type`: *enum*. Type of the message, one of the following `text`, `file`, `link`, `picture`, `video` or `event`.
+- `text`: *string*, **optional**. Text message content or event type, if `type` of the message is `event`.
+- `url`: *url string*, **optional**. URL of video, photo, link or file.
+- `mentions`: *array of user id strings*. Array of the user ids mentioned in the message. Doesn't contain your bot id. If the bot was mentioned, see `mentioned` field.
+- `mentioned`: *boolean*. Determines whether bot was mentioned in the message.
+- `direct`: *bool*. True if it's a direct message to your bot.
+- `timestamp`: *timestamp*. In milliseconds.
 
-### Text Messages
+Example of the incoming message:
 
 ```javascript
-// text message
+// example of incoming text message
 {
-  "type": "text",
-  "text": "this is text",
+  "channel": "FKVF9KTZ", // id of the channel, where message was sent
+  "user": "XFD7KDX0", // id of the user, who sent the message
+  "type": "text", // this is a simple text message
+  "text": "this is a text message",
+  "mentions": [], // no mentions of other users were found in this message
+  "mentioned": false, // your bot were not mentioned in the message
+  "direct": false, // it's a group message, other users may be present on this channel
+  "timestamp": 1463487634001
+}
+```
+
+```javascript
+// example of incoming text message with mentions
+{
+  "channel": "FKVF9KTZ", // id of the channel, where message was sent
+  "user": "XFD7KDX0", // id of the user, who sent the message
+  "type": "text", // this is a simple text message
+  "text": "Hi, <@ME>, I'd like to schedule a meeting with <@YFD6F8X0>", // content of the message with user mentions
+  "mentions": ['YFD6F8X0'], // user with id YFD6F8X0 was mentioned in the message
+  "mentioned": true, // your bot were mentioned in the message
+  "direct": true, // it's a direct message
+  "timestamp": 1463487634001
+}
+```
+
+Outgoing messages should contain the next fields:
+
+- `channel`: *channel id string*. Channel id, where channel is a user or group of users.
+- `type`: *enum*. Type of the message, one of the following `text`, `file`, `link`, `picture`, `video` or `event`.
+- `text`: *string*, **optional**. Text message content or event type, if `type` of the message is `event`. If you want to mention a user, use the next construction anywhere within your text `<@USERID>`. To mention your bot itself simply use `<@ME>`.
+- `url`: *url string*, **optional**. URL of video, photo, link or file.
+
+Here is an example of your bot's message:
+
+```javascript
+// example of outgoing text message
+{
+  "channel": "FKVF9KTZ", // send message to the channel with this id
+  "type": "text", // send a text message
+  "text": "Hi, <@XFD7KDX0>, my name is <@ME>."
+}
+```
+
+For more examples on different types of messages, please, see (Message Examples)[#message-examples].
+
+### Message Examples
+
+#### Text Messages
+
+```javascript
+// example of incoming text message
+{
   "channel": "FKVF9KTZ",
+  "user": "XFD7KDX0",
+  "type": "text",
+  "text": "this is a text message",
   "mentions": [],
   "mentioned": false,
   "direct": true,
@@ -75,14 +129,24 @@ In case of websockets:
 }
 ```
 
-### Links
+```javascript
+// example of outgoing text message
+{
+  "channel": "FKVF9KTZ",
+  "type": "text",
+  "text": "Hi, <@XFD7KDX0>, my name is <@ME>."
+}
+```
+
+#### Links
 
 ```javascript
-// link message
+// example of incoming link message
 {
+  "channel": "FKVF9KTZ",
+  "user": "XFD7KDX0",
   "type": "link",
   "url": "https://www.facebook.com",
-  "channel": "FKVF9KTZ",
   "mentions": [],
   "mentioned": false,
   "direct": true,
@@ -90,13 +154,24 @@ In case of websockets:
 }
 ```
 
-### Pictures
 
 ```javascript
-// picture message
+// example of outgoing link message
 {
+  "channel": "FKVF9KTZ",
+  "type": "link",
+  "url": "https://www.facebook.com"
+}
+```
+
+#### Pictures
+
+```javascript
+// example of incoming picture message
+{
+  "channel": "FKVF9KTZ",
+  "user": "XFD7KDX0",
   "type": "picture",
-  "channel": "FKVF9KTZ",
   "url": "https://files.botcamp.ai/FKVF9KTZ/YX431AG2",
   "mentions": [],
   "mentioned": false,
@@ -105,14 +180,24 @@ In case of websockets:
 }
 ```
 
-### Videos
+```javascript
+// example of outgoing picture message
+{
+  "channel": "FKVF9KTZ",
+  "type": "picture",
+  "url": "http://www.aagga.com/wp-content/uploads/2016/02/Sample.jpg"
+}
+```
+
+#### Videos
 
 ```javascript
-// video message
+// example of incoming video message
 {
+  "channel": "FKVF9KTZ",
+  "user": "XFD7KDX0",
   "type": "video",
-  "channel": "FKVF9KTZ",
-  "url": "http://download.wavetlan.com/SVV/Media/HTTP/H264/Talkinghead_Media/H264_test1_Talkinghead_mp4_480x360.mp4",
+  "url": "https://files.botcamp.ai/HFGDY64J",
   "mentions": [],
   "mentioned": false,
   "direct": true,
@@ -120,30 +205,57 @@ In case of websockets:
 }
 ```
 
-### Files
+```javascript
+// example of outgoing video message; maximum video size is 15Mb
+{
+  "channel": "FKVF9KTZ",
+  "type": "video",
+  "url": "http://download.wavetlan.com/SVV/Media/HTTP/H264/Talkinghead_Media/H264_test1_Talkinghead_mp4_480x360.mp4"
+}
+```
+
+#### Files
 
 ```javascript
-// file message
+// example of incoming file message
 {
-  "type": "file",
   "channel": "FKVF9KTZ",
-  "url": "https://files.botcamp.ai/FKVF9KTZ/YX431AG2",
+  "user": "XFD7KDX0",
+  "type": "file",
+  "url": "https://files.botcamp.ai/JI431AG2",
   "mentions": [],
   "mentioned": false,
   "direct": true,
   "timestamp": 1463487634001
+}
+```
+
+```javascript
+// example of outgoing file message
+{
+  "channel": "FKVF9KTZ",
+  "type": "file",
+  "url": "http://www.pdf995.com/samples/pdf.pdf"
 }
 ```
 
 ## Events
 
+Events are a special type of *only incoming messages*. It helps your bot better to understand the context of what's happening, e.g. user has left the channel or started typing something.
+
+Botcamp now supports the following types of the events:
+- `start`: start of the conversation, your bot was added
+- `join`: user joined a channel
+- `leave`: user left a channel
+- `end`: end of the conversation, your bot was removed
+
 ```javascript
 // start of the conversation / added to a channel
 {
-  "type": "event",
   "channel": "FKVF9KTZ",
+  "user": "XFD7KDX0", // user who invited you or started a conversation
+  "type": "event",
   "text": "start",
-  "user": "XFSF9KTZ", // user who invited you or started a conversation
   "timestamp": 1463487634001
 }
 ```
@@ -151,10 +263,10 @@ In case of websockets:
 ```javascript
 // end of the conversation / removed from a channel
 {
-  "type": "event",
   "channel": "FKVF9KTZ",
-  "text": "start",
-  "user": "XFSF9KTZ", // user who removed you or closed the conversation
+  "user": "XFD7KDX0", // user who removed you or closed the conversation
+  "type": "event",
+  "text": "end",
   "timestamp": 1463487634001
 }
 ```
@@ -162,10 +274,10 @@ In case of websockets:
 ```javascript
 // new user joined
 {
-  "type": "event",
   "channel": "FKVF9KTZ",
+  "user": "XFD7KDX0", // user who joined
+  "type": "event",
   "text": "join",
-  "user": "XFSF9KTZ", // user who joined
   "timestamp": 1463487634001
 }
 ```
@@ -173,40 +285,14 @@ In case of websockets:
 ```javascript
 // user left a channel / group
 {
+  "channel": "FKVF9KTZ",
+  "user": "XFD7KDX0", // user who left
   "type": "event",
-  "channel": "FKVF9KTZ",
   "text": "leave",
-  "user": "XFSF9KTZ", // user who left
   "timestamp": 1463487634001
-}
-```
-
-## Mentions
-
-### Receiving Messages
-
-```javascript
-// text message
-{
-  "type": "text",
-  "text": "<@XK7F9CHY>, can you do that?",
-  "channel": "FKVF9KTZ",
-  "mentions": [],
-  "mentioned": true,
-  "direct": false,
-  "timestamp": 1463487634001
-}
-```
-
-### Sending Messages
-
-```javascript
-// text message
-{
-  "type": "text",
-  "text": "<@FDSA5GF8>, yes, I can? You can also ask <@JFD2GH4O> to do that.",
-  "channel": "FKVF9KTZ"
 }
 ```
 
 ## Questions, Feature Requests and Bug Reports
+
+If you have a bug report, a feature request in your mind, or just stuck somewhere and need help, please, (file a ticket)[https://github.com/BotcampAI/support]. We will be happy to help you.

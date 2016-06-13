@@ -208,3 +208,5 @@ In case of websockets:
   "channel": "FKVF9KTZ"
 }
 ```
+
+## Questions, Feature Requests and Bug Reports

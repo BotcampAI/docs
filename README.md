@@ -4,7 +4,7 @@
 
 First of all, you need to create a bot using [Botcamp Web Application](http://app.botcamp.ai/). Right after it, you'll get a token for a newly created bot to communicate with Botcamp platform.
 
-You have a choice of two different ways on how to communicate with our platform — [HTTP API](#http-api) or [Websockets](#websockets). Please, keep in mind that these are alternative approaches, that cannot be used together.
+You have a choice of two different ways on how to communicate with our platform — HTTP API or Websockets. Please, keep in mind that these are alternative approaches, that cannot be used together.
 
 ## Authorization
 
@@ -109,7 +109,7 @@ Here is an example of your bot's message:
 }
 ```
 
-For more examples on different types of messages, please, see (Message Examples)[#message-examples].
+For more examples on different types of messages, please, see [Message Examples](#message-examples).
 
 ## Events
 
@@ -295,4 +295,4 @@ Botcamp now supports the following types of the events:
 
 ## Questions, Feature Requests and Bug Reports
 
-If you have a bug report, a feature request in your mind, or just stuck somewhere and need help, please, (file a ticket)[https://github.com/BotcampAI/support]. We will be happy to help you.
+If you have a bug report, a feature request in your mind, or just stuck somewhere and need help, please, [file a ticket](https://github.com/BotcampAI/support). We will be happy to help you.

@@ -46,7 +46,6 @@ In case of websockets:
 }
 ```
 
-
 ## Messages
 
 Botcamp transforms incoming messages from all the platforms, and unifies the format of them. Apart from the important information, you receive some helper properties to ease your work.
@@ -60,6 +59,7 @@ Botcamp transforms incoming messages from all the platforms, and unifies the for
 - `mentioned`: *boolean*. Determines whether bot was mentioned in the message.
 - `direct`: *bool*. True if it's a direct message to your bot.
 - `timestamp`: *timestamp*. In milliseconds.
+- `token`: *token string*. It's a required field in case you're using websockets. In case of HTTP API, please, use `Authorization` header.
 
 Example of the incoming message:
 
@@ -110,134 +110,6 @@ Here is an example of your bot's message:
 ```
 
 For more examples on different types of messages, please, see (Message Examples)[#message-examples].
-
-### Message Examples
-
-#### Text Messages
-
-```javascript
-// example of incoming text message
-{
-  "channel": "FKVF9KTZ",
-  "user": "XFD7KDX0",
-  "type": "text",
-  "text": "this is a text message",
-  "mentions": [],
-  "mentioned": false,
-  "direct": true,
-  "timestamp": 1463487634001
-}
-```
-
-```javascript
-// example of outgoing text message
-{
-  "channel": "FKVF9KTZ",
-  "type": "text",
-  "text": "Hi, <@XFD7KDX0>, my name is <@ME>."
-}
-```
-
-#### Links
-
-```javascript
-// example of incoming link message
-{
-  "channel": "FKVF9KTZ",
-  "user": "XFD7KDX0",
-  "type": "link",
-  "url": "https://www.facebook.com",
-  "mentions": [],
-  "mentioned": false,
-  "direct": true,
-  "timestamp": 1463487634001
-}
-```
-
-
-```javascript
-// example of outgoing link message
-{
-  "channel": "FKVF9KTZ",
-  "type": "link",
-  "url": "https://www.facebook.com"
-}
-```
-
-#### Pictures
-
-```javascript
-// example of incoming picture message
-{
-  "channel": "FKVF9KTZ",
-  "user": "XFD7KDX0",
-  "type": "picture",
-  "url": "https://files.botcamp.ai/FKVF9KTZ/YX431AG2",
-  "mentions": [],
-  "mentioned": false,
-  "direct": true,
-  "timestamp": 1463487634001
-}
-```
-
-```javascript
-// example of outgoing picture message
-{
-  "channel": "FKVF9KTZ",
-  "type": "picture",
-  "url": "http://www.aagga.com/wp-content/uploads/2016/02/Sample.jpg"
-}
-```
-
-#### Videos
-
-```javascript
-// example of incoming video message
-{
-  "channel": "FKVF9KTZ",
-  "user": "XFD7KDX0",
-  "type": "video",
-  "url": "https://files.botcamp.ai/HFGDY64J",
-  "mentions": [],
-  "mentioned": false,
-  "direct": true,
-  "timestamp": 1463487634001
-}
-```
-
-```javascript
-// example of outgoing video message; maximum video size is 15Mb
-{
-  "channel": "FKVF9KTZ",
-  "type": "video",
-  "url": "http://download.wavetlan.com/SVV/Media/HTTP/H264/Talkinghead_Media/H264_test1_Talkinghead_mp4_480x360.mp4"
-}
-```
-
-#### Files
-
-```javascript
-// example of incoming file message
-{
-  "channel": "FKVF9KTZ",
-  "user": "XFD7KDX0",
-  "type": "file",
-  "url": "https://files.botcamp.ai/JI431AG2",
-  "mentions": [],
-  "mentioned": false,
-  "direct": true,
-  "timestamp": 1463487634001
-}
-```
-
-```javascript
-// example of outgoing file message
-{
-  "channel": "FKVF9KTZ",
-  "type": "file",
-  "url": "http://www.pdf995.com/samples/pdf.pdf"
-}
-```
 
 ## Events
 
@@ -290,6 +162,134 @@ Botcamp now supports the following types of the events:
   "type": "event",
   "text": "leave",
   "timestamp": 1463487634001
+}
+```
+
+## Message Examples
+
+### Text Messages
+
+```javascript
+// example of incoming text message
+{
+  "channel": "FKVF9KTZ",
+  "user": "XFD7KDX0",
+  "type": "text",
+  "text": "this is a text message",
+  "mentions": [],
+  "mentioned": false,
+  "direct": true,
+  "timestamp": 1463487634001
+}
+```
+
+```javascript
+// example of outgoing text message
+{
+  "channel": "FKVF9KTZ",
+  "type": "text",
+  "text": "Hi, <@XFD7KDX0>, my name is <@ME>."
+}
+```
+
+### Links
+
+```javascript
+// example of incoming link message
+{
+  "channel": "FKVF9KTZ",
+  "user": "XFD7KDX0",
+  "type": "link",
+  "url": "https://www.facebook.com",
+  "mentions": [],
+  "mentioned": false,
+  "direct": true,
+  "timestamp": 1463487634001
+}
+```
+
+
+```javascript
+// example of outgoing link message
+{
+  "channel": "FKVF9KTZ",
+  "type": "link",
+  "url": "https://www.facebook.com"
+}
+```
+
+### Pictures
+
+```javascript
+// example of incoming picture message
+{
+  "channel": "FKVF9KTZ",
+  "user": "XFD7KDX0",
+  "type": "picture",
+  "url": "https://files.botcamp.ai/FKVF9KTZ/YX431AG2",
+  "mentions": [],
+  "mentioned": false,
+  "direct": true,
+  "timestamp": 1463487634001
+}
+```
+
+```javascript
+// example of outgoing picture message
+{
+  "channel": "FKVF9KTZ",
+  "type": "picture",
+  "url": "http://www.aagga.com/wp-content/uploads/2016/02/Sample.jpg"
+}
+```
+
+### Videos
+
+```javascript
+// example of incoming video message
+{
+  "channel": "FKVF9KTZ",
+  "user": "XFD7KDX0",
+  "type": "video",
+  "url": "https://files.botcamp.ai/HFGDY64J",
+  "mentions": [],
+  "mentioned": false,
+  "direct": true,
+  "timestamp": 1463487634001
+}
+```
+
+```javascript
+// example of outgoing video message; maximum video size is 15Mb
+{
+  "channel": "FKVF9KTZ",
+  "type": "video",
+  "url": "http://download.wavetlan.com/SVV/Media/HTTP/H264/Talkinghead_Media/H264_test1_Talkinghead_mp4_480x360.mp4"
+}
+```
+
+### Files
+
+```javascript
+// example of incoming file message
+{
+  "channel": "FKVF9KTZ",
+  "user": "XFD7KDX0",
+  "type": "file",
+  "url": "https://files.botcamp.ai/JI431AG2",
+  "mentions": [],
+  "mentioned": false,
+  "direct": true,
+  "timestamp": 1463487634001
+}
+```
+
+```javascript
+// example of outgoing file message
+{
+  "channel": "FKVF9KTZ",
+  "type": "file",
+  "url": "http://www.pdf995.com/samples/pdf.pdf"
 }
 ```
 

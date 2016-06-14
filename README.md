@@ -1,4 +1,4 @@
-# Botcamp API
+# Botcamp API Documentation
 
 ## Getting started
 

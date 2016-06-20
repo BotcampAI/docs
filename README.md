@@ -1,12 +1,22 @@
 # Botcamp API Documentation
 
-## Getting started
+- [Getting Started](#getting-started)
+- [Request Authorization](#request-authorization)
+- [Configuring Your Bot](#configuring-your-bot)
+- [Messages](#messages)
+- [Events](#events)
+- [Users API](#users-api)
+- [Files API](#files-api)
+- [Message Examples](#message-examples)
+- [Questions, Feature Requests and Bug Reports](#questions-feature-requests-and-bug-reports)
+
+## Getting Started
 
 First of all, you need to create a bot using [Botcamp Web Application](http://app.botcamp.ai/). Right after it, you'll get a token for a newly created bot to communicate with Botcamp platform.
 
 You have a choice of two different ways on how to communicate with our platform — HTTP API or Websockets. Please, keep in mind that these are alternative approaches, that cannot be used together.
 
-## Authorization
+## Request Authorization
 
 Each HTTP-request to Botcamp API should contain your bot token within `Authorization` header property.
 
@@ -164,6 +174,13 @@ Botcamp now supports the following types of the events:
   "timestamp": 1463487634001
 }
 ```
+
+## Users API
+
+
+## Files API
+
+
 
 ## Message Examples
 

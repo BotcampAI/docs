@@ -35,10 +35,20 @@
 
         <section class="content">
             <h1 id="botcamp-api-documentation">Botcamp API Documentation</h1>
-<h2 id="getting-started">Getting started</h2>
+<ul>
+<li><a href="#getting-started">Getting Started</a></li>
+<li><a href="#request-authorization">Request Authorization</a></li>
+<li><a href="#configuring-your-bot">Configuring Your Bot</a></li>
+<li><a href="#messages">Messages</a></li>
+<li><a href="#events">Events</a></li>
+<li><a href="#users-api">Users API</a></li>
+<li><a href="#message-examples">Message Examples</a></li>
+<li><a href="#questions-feature-requests-and-bug-reports">Questions, Feature Requests and Bug Reports</a></li>
+</ul>
+<h2 id="getting-started">Getting Started</h2>
 <p>First of all, you need to create a bot using <a href="http://app.botcamp.ai/">Botcamp Web Application</a>. Right after it, you&#39;ll get a token for a newly created bot to communicate with Botcamp platform.</p>
 <p>You have a choice of two different ways on how to communicate with our platform — HTTP API or Websockets. Please, keep in mind that these are alternative approaches, that cannot be used together.</p>
-<h2 id="authorization">Authorization</h2>
+<h2 id="request-authorization">Request Authorization</h2>
 <p>Each HTTP-request to Botcamp API should contain your bot token within <code>Authorization</code> header property.</p>
 <pre><code><div class="highlight"><pre>  <span class="nx">Authorization</span><span class="o">:</span> <span class="nx">Bearer</span> <span class="nx">placeYourBotTokenHere</span>
 </pre></div>
@@ -185,6 +195,7 @@
 </pre></div>
 
 </code></pre>
+<h2 id="users-api">Users API</h2>
 <h2 id="message-examples">Message Examples</h2>
 <h3 id="text-messages">Text Messages</h3>
 <pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// example of incoming text message</span>

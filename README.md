@@ -177,10 +177,26 @@ Botcamp now supports the following types of the events:
 
 ## Users API
 
+Botcamp provides an API to learn more about your users. Passing user id, you have received in any message, you can access such information like first name, last name, email and much more. Of course, it strictly depends on the type of the messenger being used to send the message.
+
+Send `GET` request to `https://users.botcamp.ai/${userId}` and do not forget to add your token to `Authorization` header. We do not store any user information and provide it as a proxy, so please be sure you store it in some way on your side.
+
+```javascript
+// GET to https://users.botcamp.ai/XFD7KDX0
+{
+  "username": "hoxyfoxy",
+  "firstname": "John",
+  "lastname": "Doe",
+  "email": "john@doe.com",
+  "image": "https://files.botcamp.ai/JGFY25FX"
+}
+```
 
 ## Files API
 
+Probably you have already noticed, that for security reasons Botcamp hides all the incoming URLs behind its own proxy file server. Same as for the users we do not store any files on our servers. We always include a full URL to all files in any message in the format of `https://files.botcamp.ai/${fileId}`.
 
+Do not forget to add your token to `Authorization` header.
 
 ## Message Examples
 

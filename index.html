@@ -42,6 +42,7 @@
 <li><a href="#messages">Messages</a></li>
 <li><a href="#events">Events</a></li>
 <li><a href="#users-api">Users API</a></li>
+<li><a href="#files-api">Files API</a></li>
 <li><a href="#message-examples">Message Examples</a></li>
 <li><a href="#questions-feature-requests-and-bug-reports">Questions, Feature Requests and Bug Reports</a></li>
 </ul>
@@ -196,6 +197,22 @@
 
 </code></pre>
 <h2 id="users-api">Users API</h2>
+<p>Botcamp provides an API to learn more about your users. Passing user id, you have received in any message, you can access such information like first name, last name, email and much more. Of course, it strictly depends on the type of the messenger being used to send the message.</p>
+<p>Send <code>GET</code> request to <code>https://users.botcamp.ai/${userId}</code> and do not forget to add your token to <code>Authorization</code> header. We do not store any user information and provide it as a proxy, so please be sure you store it in some way on your side.</p>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// GET to https://users.botcamp.ai/XFD7KDX0</span>
+<span class="p">{</span>
+  <span class="s2">&quot;username&quot;</span><span class="o">:</span> <span class="s2">&quot;hoxyfoxy&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;firstname&quot;</span><span class="o">:</span> <span class="s2">&quot;John&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;lastname&quot;</span><span class="o">:</span> <span class="s2">&quot;Doe&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;email&quot;</span><span class="o">:</span> <span class="s2">&quot;john@doe.com&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;image&quot;</span><span class="o">:</span> <span class="s2">&quot;https://files.botcamp.ai/JGFY25FX&quot;</span>
+<span class="p">}</span>
+</pre></div>
+
+</code></pre>
+<h2 id="files-api">Files API</h2>
+<p>Probably you have already noticed, that for security reasons Botcamp hides all the incoming URLs behind its own proxy file server. Same as for the users we do not store any files on our servers. We always include a full URL to all files in any message in the format of <code>https://files.botcamp.ai/${fileId}</code>.</p>
+<p>Do not forget to add your token to <code>Authorization</code> header.</p>
 <h2 id="message-examples">Message Examples</h2>
 <h3 id="text-messages">Text Messages</h3>
 <pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// example of incoming text message</span>

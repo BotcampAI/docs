@@ -52,7 +52,7 @@ In case of websockets:
 
 ```javascript
 {
-  "ws": "wss://api.botcamp.ai/rt/FH67DSX"
+  "ws": "wss://api.botcamp.ai/FH67DSX"
 }
 ```
 

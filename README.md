@@ -4,10 +4,17 @@
 - [Request Authorization](#request-authorization)
 - [Configuring Your Bot](#configuring-your-bot)
 - [Messages](#messages)
+- [Mentions](#mentions)
 - [Events](#events)
+- [Custom Keyboards](#custom-keyboards)
 - [Users API](#users-api)
 - [Files API](#files-api)
 - [Message Examples](#message-examples)
+  - [Text Messages](#text-messages)
+  - [Links](#links)
+  - [Pictures](#pictures)
+  - [Videos](#videos)
+  - [Files](#files)
 - [Questions, Feature Requests and Bug Reports](#questions-feature-requests-and-bug-reports)
 
 ## Getting Started
@@ -69,7 +76,8 @@ Botcamp transforms incoming messages from all the platforms, and unifies the for
 - `mentioned`: *boolean*. Determines whether bot was mentioned in the message.
 - `direct`: *bool*. True if it's a direct message to your bot.
 - `timestamp`: *timestamp*. In milliseconds.
-- `token`: *token string*. It's a required field in case you're using websockets. In case of HTTP API, please, use `Authorization` header.
+- `suggestions`: *array of strings*. A set of quick reply options for the user (custom keyboard).
+- `token`: *token string*. **optional**. It's a required field in case you're using websockets. In case of HTTP API, please, use `Authorization` header.
 
 Example of the incoming message:
 
@@ -83,20 +91,6 @@ Example of the incoming message:
   "mentions": [], // no mentions of other users were found in this message
   "mentioned": false, // your bot were not mentioned in the message
   "direct": false, // it's a group message, other users may be present on this channel
-  "timestamp": 1463487634001
-}
-```
-
-```javascript
-// example of incoming text message with mentions
-{
-  "channel": "FKVF9KTZ", // id of the channel, where message was sent
-  "user": "XFD7KDX0", // id of the user, who sent the message
-  "type": "text", // this is a simple text message
-  "text": "Hi, <@ME>, I'd like to schedule a meeting with <@YFD6F8X0>", // content of the message with user mentions
-  "mentions": ['YFD6F8X0'], // user with id YFD6F8X0 was mentioned in the message
-  "mentioned": true, // your bot were mentioned in the message
-  "direct": true, // it's a direct message
   "timestamp": 1463487634001
 }
 ```
@@ -115,11 +109,40 @@ Here is an example of your bot's message:
 {
   "channel": "FKVF9KTZ", // send message to the channel with this id
   "type": "text", // send a text message
-  "text": "Hi, <@XFD7KDX0>, my name is <@ME>."
+  "text": "Hi, nice to meet you."
 }
 ```
 
 For more examples on different types of messages, please, see [Message Examples](#message-examples).
+
+## Mentions
+
+Botcamp provides you with the list of users mentioned in a message (`mentions` property of an incoming message, see [messages format](#messages) for more information), as well as with the information whether your bot is being mentioned or not (`mentioned` property). Your bot username is replaced with `<@ME>` placeholder, other users are represented in a format of `<@USERID>`, e.g. `<@YFD6F8X0>`. See [Users API](#users-api)) on how to retrieve the information about a specific user.
+
+```javascript
+// example of incoming text message with mentions
+{
+  "channel": "FKVF9KTZ", // id of the channel, where message was sent
+  "user": "XFD7KDX0", // id of the user, who sent the message
+  "type": "text", // this is a simple text message
+  "text": "Hi, <@ME>, I'd like to schedule a meeting with <@YFD6F8X0>", // content of the message with user mentions
+  "mentions": ['YFD6F8X0'], // user with id YFD6F8X0 was mentioned in the message
+  "mentioned": true, // your bot were mentioned in the message
+  "direct": true, // it's a direct message
+  "timestamp": 1463487634001
+}
+```
+
+Same rules apply for the outgoing messages from your bot. Use `<@ME>` to mention your bot or `<@USERID>` to mention a user.
+
+```javascript
+// example of outgoing text message
+{
+  "channel": "FKVF9KTZ", // send message to the channel with this id
+  "type": "text", // send a text message
+  "text": "Hi, <@ME> is here to help! What time do you prefer for the meeting with <@YFD6F8X0>?"
+}
+```
 
 ## Events
 
@@ -174,6 +197,23 @@ Botcamp now supports the following types of the events:
   "timestamp": 1463487634001
 }
 ```
+
+## Custom keyboards
+
+To add a custom keyboard to the message, `suggestions` property should be specified within a message payload (works for any message type). It should contain a set of strings, that represent the options for a custom keyboard. This functionality works for all platforms, including a fallback for Slack.
+
+```javascript
+// example of outgoing text message with a custom keyboard
+{
+  "channel": "FKVF9KTZ",
+  "type": "text",
+  "text": "Hi there. How do you feel using Botcamp?",
+  "suggestions": ["Good", "It's amazing", "Botcamp rocks!"]
+}
+```
+
+Botcamp utilizes [quick replies](https://developers.facebook.com/docs/messenger-platform/send-api-reference/quick-replies) for Facebook Messenger, [ReplyKeyboardMarkup](https://core.telegram.org/bots/api#replykeyboardmarkup) for Telegram, [suggested keyboards](https://dev.kik.com/#/docs/messaging#keyboards) for Kik and a fallback with a text message with options for Slack.
+
 
 ## Users API
 

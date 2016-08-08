@@ -40,10 +40,19 @@
 <li><a href="#request-authorization">Request Authorization</a></li>
 <li><a href="#configuring-your-bot">Configuring Your Bot</a></li>
 <li><a href="#messages">Messages</a></li>
+<li><a href="#mentions">Mentions</a></li>
 <li><a href="#events">Events</a></li>
+<li><a href="#custom-keyboards">Custom Keyboards</a></li>
 <li><a href="#users-api">Users API</a></li>
 <li><a href="#files-api">Files API</a></li>
-<li><a href="#message-examples">Message Examples</a></li>
+<li><a href="#message-examples">Message Examples</a><ul>
+<li><a href="#text-messages">Text Messages</a></li>
+<li><a href="#links">Links</a></li>
+<li><a href="#pictures">Pictures</a></li>
+<li><a href="#videos">Videos</a></li>
+<li><a href="#files">Files</a></li>
+</ul>
+</li>
 <li><a href="#questions-feature-requests-and-bug-reports">Questions, Feature Requests and Bug Reports</a></li>
 </ul>
 <h2 id="getting-started">Getting Started</h2>
@@ -94,7 +103,8 @@
 <li><code>mentioned</code>: <em>boolean</em>. Determines whether bot was mentioned in the message.</li>
 <li><code>direct</code>: <em>bool</em>. True if it&#39;s a direct message to your bot.</li>
 <li><code>timestamp</code>: <em>timestamp</em>. In milliseconds.</li>
-<li><code>token</code>: <em>token string</em>. It&#39;s a required field in case you&#39;re using websockets. In case of HTTP API, please, use <code>Authorization</code> header.</li>
+<li><code>suggestions</code>: <em>array of strings</em>. A set of quick reply options for the user (custom keyboard).</li>
+<li><code>token</code>: <em>token string</em>. <strong>optional</strong>. It&#39;s a required field in case you&#39;re using websockets. In case of HTTP API, please, use <code>Authorization</code> header.</li>
 </ul>
 <p>Example of the incoming message:</p>
 <pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// example of incoming text message</span>
@@ -106,20 +116,6 @@
   <span class="s2">&quot;mentions&quot;</span><span class="o">:</span> <span class="p">[],</span> <span class="c1">// no mentions of other users were found in this message</span>
   <span class="s2">&quot;mentioned&quot;</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span> <span class="c1">// your bot were not mentioned in the message</span>
   <span class="s2">&quot;direct&quot;</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span> <span class="c1">// it&#39;s a group message, other users may be present on this channel</span>
-  <span class="s2">&quot;timestamp&quot;</span><span class="o">:</span> <span class="mi">1463487634001</span>
-<span class="p">}</span>
-</pre></div>
-
-</code></pre>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// example of incoming text message with mentions</span>
-<span class="p">{</span>
-  <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span> <span class="c1">// id of the channel, where message was sent</span>
-  <span class="s2">&quot;user&quot;</span><span class="o">:</span> <span class="s2">&quot;XFD7KDX0&quot;</span><span class="p">,</span> <span class="c1">// id of the user, who sent the message</span>
-  <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="c1">// this is a simple text message</span>
-  <span class="s2">&quot;text&quot;</span><span class="o">:</span> <span class="s2">&quot;Hi, &lt;@ME&gt;, I&#39;d like to schedule a meeting with &lt;@YFD6F8X0&gt;&quot;</span><span class="p">,</span> <span class="c1">// content of the message with user mentions</span>
-  <span class="s2">&quot;mentions&quot;</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;YFD6F8X0&#39;</span><span class="p">],</span> <span class="c1">// user with id YFD6F8X0 was mentioned in the message</span>
-  <span class="s2">&quot;mentioned&quot;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span> <span class="c1">// your bot were mentioned in the message</span>
-  <span class="s2">&quot;direct&quot;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span> <span class="c1">// it&#39;s a direct message</span>
   <span class="s2">&quot;timestamp&quot;</span><span class="o">:</span> <span class="mi">1463487634001</span>
 <span class="p">}</span>
 </pre></div>
@@ -137,12 +133,38 @@
 <span class="p">{</span>
   <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span> <span class="c1">// send message to the channel with this id</span>
   <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="c1">// send a text message</span>
-  <span class="s2">&quot;text&quot;</span><span class="o">:</span> <span class="s2">&quot;Hi, &lt;@XFD7KDX0&gt;, my name is &lt;@ME&gt;.&quot;</span>
+  <span class="s2">&quot;text&quot;</span><span class="o">:</span> <span class="s2">&quot;Hi, nice to meet you.&quot;</span>
 <span class="p">}</span>
 </pre></div>
 
 </code></pre>
 <p>For more examples on different types of messages, please, see <a href="#message-examples">Message Examples</a>.</p>
+<h2 id="mentions">Mentions</h2>
+<p>Botcamp provides you with the list of users mentioned in a message (<code>mentions</code> property of an incoming message, see <a href="#messages">messages format</a> for more information), as well as with the information whether your bot is being mentioned or not (<code>mentioned</code> property). Your bot username is replaced with <code>&lt;@ME&gt;</code> placeholder, other users are represented in a format of <code>&lt;@USERID&gt;</code>, e.g. <code>&lt;@YFD6F8X0&gt;</code>. See <a href="#users-api">Users API</a>) on how to retrieve the information about a specific user.</p>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// example of incoming text message with mentions</span>
+<span class="p">{</span>
+  <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span> <span class="c1">// id of the channel, where message was sent</span>
+  <span class="s2">&quot;user&quot;</span><span class="o">:</span> <span class="s2">&quot;XFD7KDX0&quot;</span><span class="p">,</span> <span class="c1">// id of the user, who sent the message</span>
+  <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="c1">// this is a simple text message</span>
+  <span class="s2">&quot;text&quot;</span><span class="o">:</span> <span class="s2">&quot;Hi, &lt;@ME&gt;, I&#39;d like to schedule a meeting with &lt;@YFD6F8X0&gt;&quot;</span><span class="p">,</span> <span class="c1">// content of the message with user mentions</span>
+  <span class="s2">&quot;mentions&quot;</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;YFD6F8X0&#39;</span><span class="p">],</span> <span class="c1">// user with id YFD6F8X0 was mentioned in the message</span>
+  <span class="s2">&quot;mentioned&quot;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span> <span class="c1">// your bot were mentioned in the message</span>
+  <span class="s2">&quot;direct&quot;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span> <span class="c1">// it&#39;s a direct message</span>
+  <span class="s2">&quot;timestamp&quot;</span><span class="o">:</span> <span class="mi">1463487634001</span>
+<span class="p">}</span>
+</pre></div>
+
+</code></pre>
+<p>Same rules apply for the outgoing messages from your bot. Use <code>&lt;@ME&gt;</code> to mention your bot or <code>&lt;@USERID&gt;</code> to mention a user.</p>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// example of outgoing text message</span>
+<span class="p">{</span>
+  <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span> <span class="c1">// send message to the channel with this id</span>
+  <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="c1">// send a text message</span>
+  <span class="s2">&quot;text&quot;</span><span class="o">:</span> <span class="s2">&quot;Hi, &lt;@ME&gt; is here to help! What time do you prefer for the meeting with &lt;@YFD6F8X0&gt;?&quot;</span>
+<span class="p">}</span>
+</pre></div>
+
+</code></pre>
 <h2 id="events">Events</h2>
 <p>Events are a special type of <em>only incoming messages</em>. It helps your bot better to understand the context of what&#39;s happening, e.g. user has left the channel or started typing something.</p>
 <p>Botcamp now supports the following types of the events:</p>
@@ -196,6 +218,19 @@
 </pre></div>
 
 </code></pre>
+<h2 id="custom-keyboards">Custom keyboards</h2>
+<p>To add a custom keyboard to the message, <code>suggestions</code> property should be specified within a message payload (works for any message type). It should contain a set of strings, that represent the options for a custom keyboard. This functionality works for all platforms, including a fallback for Slack.</p>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// example of outgoing text message with a custom keyboard</span>
+<span class="p">{</span>
+  <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;text&quot;</span><span class="o">:</span> <span class="s2">&quot;Hi there. How do you feel using Botcamp?&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;suggestions&quot;</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;Good&quot;</span><span class="p">,</span> <span class="s2">&quot;It&#39;s amazing&quot;</span><span class="p">,</span> <span class="s2">&quot;Botcamp rocks!&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+
+</code></pre>
+<p>Botcamp utilizes <a href="https://developers.facebook.com/docs/messenger-platform/send-api-reference/quick-replies">quick replies</a> for Facebook Messenger, <a href="https://core.telegram.org/bots/api#replykeyboardmarkup">ReplyKeyboardMarkup</a> for Telegram, <a href="https://dev.kik.com/#/docs/messaging#keyboards">suggested keyboards</a> for Kik and a fallback with a text message with options for Slack.</p>
 <h2 id="users-api">Users API</h2>
 <p>Botcamp provides an API to learn more about your users. Passing user id, you have received in any message, you can access such information like first name, last name, email and much more. Of course, it strictly depends on the type of the messenger being used to send the message.</p>
 <p>Send <code>GET</code> request to <code>https://users.botcamp.ai/${userId}</code> and do not forget to add your token to <code>Authorization</code> header. We do not store any user information and provide it as a proxy, so please be sure you store it in some way on your side.</p>

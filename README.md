@@ -19,7 +19,7 @@
 
 ## Getting Started
 
-First of all, you need to create a bot using [Botcamp Web Application](http://app.botcamp.ai/). Right after it, you'll get a token for a newly created bot to communicate with Botcamp platform.
+First of all, you need to create and configure a bot using [Botcamp App](http://app.botcamp.ai/). Right after it, you'll get a token for a newly created bot to communicate with Botcamp platform.
 
 You have a choice of two different ways on how to communicate with our platform — HTTP API or Websockets. Please, keep in mind that these are alternative approaches, that cannot be used together.
 
@@ -28,7 +28,7 @@ You have a choice of two different ways on how to communicate with our platform 
 Each HTTP-request to Botcamp API should contain your bot token within `Authorization` header property.
 
 ```
-  Authorization: Bearer placeYourBotTokenHere
+  Authorization: Bearer ${yourBotToken}
 ```
 
 In case websockets are being used instead of HTTP, please, send us your bot token together with a payload object within `token` property.
@@ -38,18 +38,23 @@ In case websockets are being used instead of HTTP, please, send us your bot toke
 To configure your bot and to get it online on all the platforms  you need to send a `POST` request to `http://api.botcamp.ai/hi` with the following payload:
 
 ```javascript
+// POST https://api.botcamp.ai/hi
+// Authorization: Bearer ${yourBotToken}
 {
   "protocol": "http",
   "webhook": "http://your-webdomain.com/bot-webhook"
 }
 ```
 
-- `protocol`: protocol you are going to use, `ws` or `http`.
-- `webhook`: should contain an URL of your script, that will be triggered each time we receive any message from your users. Required only if `protocol` is `http`.
+- `protocol`: *string*. Protocol you are going to use, `ws` or `http`.
+- `webhook`: *string*, **optional in case of protocol='ws'**. Should contain an URL of your bot server webhook, that will be triggered each time we receive any message from your users. Required only if `protocol` is `http`.
 
 Depending on the protocol chosen, the server responses with an object which contains URL to connect or post messages to:
 
 ```javascript
+// POST https://api.botcamp.ai/hi
+// Authorization: Bearer ${yourBotToken}
+// Response example:
 {
   "http": "https://api.botcamp.ai/"
 }
@@ -58,14 +63,17 @@ Depending on the protocol chosen, the server responses with an object which cont
 In case of websockets:
 
 ```javascript
+// POST https://api.botcamp.ai/hi
+// Authorization: Bearer ${yourBotToken}
+// Response example:
 {
-  "ws": "wss://api.botcamp.ai/FH67DSX"
+  "ws": "wss://api.botcamp.ai/FH67DSX" // URL to connect to Botcamp websocket server
 }
 ```
 
 ## Messages
 
-Botcamp transforms incoming messages from all the platforms, and unifies the format of them. Apart from the important information, you receive some helper properties to ease your work.
+Botcamp transforms incoming messages from all the platforms, and unifies their format. Apart from the important information, you receive some helper properties to ease your work.
 
 - `channel`: *channel id string*. Channel id, where channel is a user or group of users.
 - `user`: *user id string*. User id, where user is the user, who sends a message, uploads a file, or initiates an event.
@@ -79,10 +87,10 @@ Botcamp transforms incoming messages from all the platforms, and unifies the for
 - `suggestions`: *array of strings*. A set of quick reply options for the user (custom keyboard).
 - `token`: *token string*. **optional**. It's a required field in case you're using websockets. In case of HTTP API, please, use `Authorization` header.
 
-Example of the incoming message:
+Example of the incoming message (Botcamp makes a call to your bot's webhook):
 
 ```javascript
-// example of incoming text message
+// receiving a text message
 {
   "channel": "FKVF9KTZ", // id of the channel, where message was sent
   "user": "XFD7KDX0", // id of the user, who sent the message
@@ -105,7 +113,9 @@ Outgoing messages should contain the next fields:
 Here is an example of your bot's message:
 
 ```javascript
-// example of outgoing text message
+// sending a text message
+// POST https://api.botcamp.ai/
+// Authorization: Bearer ${yourBotToken}
 {
   "channel": "FKVF9KTZ", // send message to the channel with this id
   "type": "text", // send a text message
@@ -120,7 +130,7 @@ For more examples on different types of messages, please, see [Message Examples]
 Botcamp provides you with the list of users mentioned in a message (`mentions` property of an incoming message, see [messages format](#messages) for more information), as well as with the information whether your bot is being mentioned or not (`mentioned` property). Your bot username is replaced with `<@ME>` placeholder, other users are represented in a format of `<@USERID>`, e.g. `<@YFD6F8X0>`. See [Users API](#users-api)) on how to retrieve the information about a specific user.
 
 ```javascript
-// example of incoming text message with mentions
+// receiving a text message with mentions
 {
   "channel": "FKVF9KTZ", // id of the channel, where message was sent
   "user": "XFD7KDX0", // id of the user, who sent the message
@@ -136,7 +146,9 @@ Botcamp provides you with the list of users mentioned in a message (`mentions` p
 Same rules apply for the outgoing messages from your bot. Use `<@ME>` to mention your bot or `<@USERID>` to mention a user.
 
 ```javascript
-// example of outgoing text message
+// sending a text message with mentions
+// POST https://api.botcamp.ai/
+// Authorization: Bearer ${yourBotToken}
 {
   "channel": "FKVF9KTZ", // send message to the channel with this id
   "type": "text", // send a text message
@@ -155,6 +167,7 @@ Botcamp now supports the following types of the events:
 - `end`: end of the conversation, your bot was removed
 
 ```javascript
+// receiving an event
 // start of the conversation / added to a channel
 {
   "channel": "FKVF9KTZ",
@@ -166,6 +179,7 @@ Botcamp now supports the following types of the events:
 ```
 
 ```javascript
+// receiving an event
 // end of the conversation / removed from a channel
 {
   "channel": "FKVF9KTZ",
@@ -177,6 +191,7 @@ Botcamp now supports the following types of the events:
 ```
 
 ```javascript
+// receiving an event
 // new user joined
 {
   "channel": "FKVF9KTZ",
@@ -188,6 +203,7 @@ Botcamp now supports the following types of the events:
 ```
 
 ```javascript
+// receiving an event
 // user left a channel / group
 {
   "channel": "FKVF9KTZ",
@@ -203,7 +219,9 @@ Botcamp now supports the following types of the events:
 To add a custom keyboard to the message, `suggestions` property should be specified within a message payload (works for any message type). It should contain a set of strings, that represent the options for a custom keyboard. This functionality works for all platforms, including a fallback for Slack.
 
 ```javascript
-// example of outgoing text message with a custom keyboard
+// sending a text message with a custom keyboard
+// POST https://api.botcamp.ai/
+// Authorization: Bearer ${yourBotToken}
 {
   "channel": "FKVF9KTZ",
   "type": "text",
@@ -219,10 +237,12 @@ Botcamp utilizes [quick replies](https://developers.facebook.com/docs/messenger-
 
 Botcamp provides an API to learn more about your users. Passing user id, you have received in any message, you can access such information like first name, last name, email and much more. Of course, it strictly depends on the type of the messenger being used to send the message.
 
-Send `GET` request to `https://users.botcamp.ai/${userId}` and do not forget to add your token to `Authorization` header. We do not store any user information and provide it as a proxy, so please be sure you store it in some way on your side.
+Send `GET` request to `https://user.botcamp.ai/${userId}` and do not forget to add your token to `Authorization` header. We do not store any user information and provide it as a proxy, so please be sure you store it in some way on your side.
 
 ```javascript
-// GET to https://users.botcamp.ai/XFD7KDX0
+// getting user information
+// GET https://user.botcamp.ai/XFD7KDX0
+// Authorization: Bearer ${yourBotToken}
 {
   "username": "hoxyfoxy",
   "firstname": "John",
@@ -234,7 +254,7 @@ Send `GET` request to `https://users.botcamp.ai/${userId}` and do not forget to 
 
 ## Files API
 
-Probably you have already noticed, that for security reasons Botcamp hides all the incoming URLs behind its own proxy file server. Same as for the users we do not store any files on our servers. We always include a full URL to all files in any message in the format of `https://files.botcamp.ai/${fileId}`.
+Probably you have already noticed, that for security reasons Botcamp hides all the incoming URLs behind its own proxy file server. Same as for the users we do not store any files on our servers. We always include a full URL to all files in any message in the format of `https://file.botcamp.ai/${fileId}`.
 
 Do not forget to add your token to `Authorization` header.
 
@@ -243,7 +263,7 @@ Do not forget to add your token to `Authorization` header.
 ### Text Messages
 
 ```javascript
-// example of incoming text message
+// receiving a text message
 {
   "channel": "FKVF9KTZ",
   "user": "XFD7KDX0",
@@ -257,7 +277,9 @@ Do not forget to add your token to `Authorization` header.
 ```
 
 ```javascript
-// example of outgoing text message
+// sending a text message
+// POST https://api.botcamp.ai/
+// Authorization: Bearer ${yourBotToken}
 {
   "channel": "FKVF9KTZ",
   "type": "text",
@@ -268,7 +290,7 @@ Do not forget to add your token to `Authorization` header.
 ### Links
 
 ```javascript
-// example of incoming link message
+// receiving a link message
 {
   "channel": "FKVF9KTZ",
   "user": "XFD7KDX0",
@@ -283,7 +305,9 @@ Do not forget to add your token to `Authorization` header.
 
 
 ```javascript
-// example of outgoing link message
+// sending a link message
+// POST https://api.botcamp.ai/
+// Authorization: Bearer ${yourBotToken}
 {
   "channel": "FKVF9KTZ",
   "type": "link",
@@ -294,7 +318,7 @@ Do not forget to add your token to `Authorization` header.
 ### Pictures
 
 ```javascript
-// example of incoming picture message
+//receiving a picture message
 {
   "channel": "FKVF9KTZ",
   "user": "XFD7KDX0",
@@ -308,7 +332,9 @@ Do not forget to add your token to `Authorization` header.
 ```
 
 ```javascript
-// example of outgoing picture message
+// sending a picture message
+// POST https://api.botcamp.ai/
+// Authorization: Bearer ${yourBotToken}
 {
   "channel": "FKVF9KTZ",
   "type": "picture",
@@ -319,7 +345,7 @@ Do not forget to add your token to `Authorization` header.
 ### Videos
 
 ```javascript
-// example of incoming video message
+// receiving a video message
 {
   "channel": "FKVF9KTZ",
   "user": "XFD7KDX0",
@@ -333,7 +359,9 @@ Do not forget to add your token to `Authorization` header.
 ```
 
 ```javascript
-// example of outgoing video message; maximum video size is 15Mb
+// sending a video message; maximum video size is 15Mb
+// POST https://api.botcamp.ai/
+// Authorization: Bearer ${yourBotToken}
 {
   "channel": "FKVF9KTZ",
   "type": "video",
@@ -344,7 +372,7 @@ Do not forget to add your token to `Authorization` header.
 ### Files
 
 ```javascript
-// example of incoming file message
+// receiving a file message
 {
   "channel": "FKVF9KTZ",
   "user": "XFD7KDX0",
@@ -358,7 +386,9 @@ Do not forget to add your token to `Authorization` header.
 ```
 
 ```javascript
-// example of outgoing file message
+// sending a file message
+// POST https://api.botcamp.ai/
+// Authorization: Bearer ${yourBotToken}
 {
   "channel": "FKVF9KTZ",
   "type": "file",

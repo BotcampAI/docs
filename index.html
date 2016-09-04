@@ -7,8 +7,8 @@
         <meta name='author' content='Botcamp'>
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="Botcamp API Documentation" />
-        <meta name="keywords" content="botcamp, api, cross-platfrom, chat-bot, documentation, slack, kik, messenger, telegram, wechat" />
+        <meta name="description" content="Botcamp allows you to create cross-platform chatbots" />
+        <meta name="keywords" content="botcamp, api, cross-platfrom, chatbot platform, documentation, slack, kik, messenger, telegram, wechat" />
 
         <link rel="apple-touch-icon" sizes="57x57" href="favicon/apple-icon-57x57.png">
         <link rel="apple-touch-icon" sizes="60x60" href="favicon/apple-icon-60x60.png">
@@ -56,17 +56,19 @@
 <li><a href="#questions-feature-requests-and-bug-reports">Questions, Feature Requests and Bug Reports</a></li>
 </ul>
 <h2 id="getting-started">Getting Started</h2>
-<p>First of all, you need to create a bot using <a href="http://app.botcamp.ai/">Botcamp Web Application</a>. Right after it, you&#39;ll get a token for a newly created bot to communicate with Botcamp platform.</p>
+<p>First of all, you need to create and configure a bot using <a href="http://app.botcamp.ai/">Botcamp App</a>. Right after it, you&#39;ll get a token for a newly created bot to communicate with Botcamp platform.</p>
 <p>You have a choice of two different ways on how to communicate with our platform — HTTP API or Websockets. Please, keep in mind that these are alternative approaches, that cannot be used together.</p>
 <h2 id="request-authorization">Request Authorization</h2>
 <p>Each HTTP-request to Botcamp API should contain your bot token within <code>Authorization</code> header property.</p>
-<pre><code><div class="highlight"><pre>  <span class="nx">Authorization</span><span class="o">:</span> <span class="nx">Bearer</span> <span class="nx">placeYourBotTokenHere</span>
+<pre><code><div class="highlight"><pre>  <span class="nx">Authorization</span><span class="o">:</span> <span class="nx">Bearer</span> <span class="nx">$</span><span class="p">{</span><span class="nx">yourBotToken</span><span class="p">}</span>
 </pre></div>
 
 </code></pre><p>In case websockets are being used instead of HTTP, please, send us your bot token together with a payload object within <code>token</code> property.</p>
 <h2 id="configuring-your-bot">Configuring your bot</h2>
 <p>To configure your bot and to get it online on all the platforms  you need to send a <code>POST</code> request to <code>http://api.botcamp.ai/hi</code> with the following payload:</p>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="p">{</span>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// POST https://api.botcamp.ai/hi</span>
+<span class="c1">// Authorization: Bearer ${yourBotToken}</span>
+<span class="p">{</span>
   <span class="s2">&quot;protocol&quot;</span><span class="o">:</span> <span class="s2">&quot;http&quot;</span><span class="p">,</span>
   <span class="s2">&quot;webhook&quot;</span><span class="o">:</span> <span class="s2">&quot;http://your-webdomain.com/bot-webhook&quot;</span>
 <span class="p">}</span>
@@ -74,25 +76,31 @@
 
 </code></pre>
 <ul>
-<li><code>protocol</code>: protocol you are going to use, <code>ws</code> or <code>http</code>.</li>
-<li><code>webhook</code>: should contain an URL of your script, that will be triggered each time we receive any message from your users. Required only if <code>protocol</code> is <code>http</code>.</li>
+<li><code>protocol</code>: <em>string</em>. Protocol you are going to use, <code>ws</code> or <code>http</code>.</li>
+<li><code>webhook</code>: <em>string</em>, <strong>optional in case of protocol=&#39;ws&#39;</strong>. Should contain an URL of your bot server webhook, that will be triggered each time we receive any message from your users. Required only if <code>protocol</code> is <code>http</code>.</li>
 </ul>
 <p>Depending on the protocol chosen, the server responses with an object which contains URL to connect or post messages to:</p>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="p">{</span>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// POST https://api.botcamp.ai/hi</span>
+<span class="c1">// Authorization: Bearer ${yourBotToken}</span>
+<span class="c1">// Response example:</span>
+<span class="p">{</span>
   <span class="s2">&quot;http&quot;</span><span class="o">:</span> <span class="s2">&quot;https://api.botcamp.ai/&quot;</span>
 <span class="p">}</span>
 </pre></div>
 
 </code></pre>
 <p>In case of websockets:</p>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="p">{</span>
-  <span class="s2">&quot;ws&quot;</span><span class="o">:</span> <span class="s2">&quot;wss://api.botcamp.ai/FH67DSX&quot;</span>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// POST https://api.botcamp.ai/hi</span>
+<span class="c1">// Authorization: Bearer ${yourBotToken}</span>
+<span class="c1">// Response example:</span>
+<span class="p">{</span>
+  <span class="s2">&quot;ws&quot;</span><span class="o">:</span> <span class="s2">&quot;wss://api.botcamp.ai/FH67DSX&quot;</span> <span class="c1">// URL to connect to Botcamp websocket server</span>
 <span class="p">}</span>
 </pre></div>
 
 </code></pre>
 <h2 id="messages">Messages</h2>
-<p>Botcamp transforms incoming messages from all the platforms, and unifies the format of them. Apart from the important information, you receive some helper properties to ease your work.</p>
+<p>Botcamp transforms incoming messages from all the platforms, and unifies their format. Apart from the important information, you receive some helper properties to ease your work.</p>
 <ul>
 <li><code>channel</code>: <em>channel id string</em>. Channel id, where channel is a user or group of users.</li>
 <li><code>user</code>: <em>user id string</em>. User id, where user is the user, who sends a message, uploads a file, or initiates an event.</li>
@@ -106,8 +114,8 @@
 <li><code>suggestions</code>: <em>array of strings</em>. A set of quick reply options for the user (custom keyboard).</li>
 <li><code>token</code>: <em>token string</em>. <strong>optional</strong>. It&#39;s a required field in case you&#39;re using websockets. In case of HTTP API, please, use <code>Authorization</code> header.</li>
 </ul>
-<p>Example of the incoming message:</p>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// example of incoming text message</span>
+<p>Example of the incoming message (Botcamp makes a call to your bot&#39;s webhook):</p>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// receiving a text message</span>
 <span class="p">{</span>
   <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span> <span class="c1">// id of the channel, where message was sent</span>
   <span class="s2">&quot;user&quot;</span><span class="o">:</span> <span class="s2">&quot;XFD7KDX0&quot;</span><span class="p">,</span> <span class="c1">// id of the user, who sent the message</span>
@@ -129,7 +137,9 @@
 <li><code>url</code>: <em>url string</em>, <strong>optional</strong>. URL of video, photo, link or file.</li>
 </ul>
 <p>Here is an example of your bot&#39;s message:</p>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// example of outgoing text message</span>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// sending a text message</span>
+<span class="c1">// POST https://api.botcamp.ai/</span>
+<span class="c1">// Authorization: Bearer ${yourBotToken}</span>
 <span class="p">{</span>
   <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span> <span class="c1">// send message to the channel with this id</span>
   <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="c1">// send a text message</span>
@@ -141,7 +151,7 @@
 <p>For more examples on different types of messages, please, see <a href="#message-examples">Message Examples</a>.</p>
 <h2 id="mentions">Mentions</h2>
 <p>Botcamp provides you with the list of users mentioned in a message (<code>mentions</code> property of an incoming message, see <a href="#messages">messages format</a> for more information), as well as with the information whether your bot is being mentioned or not (<code>mentioned</code> property). Your bot username is replaced with <code>&lt;@ME&gt;</code> placeholder, other users are represented in a format of <code>&lt;@USERID&gt;</code>, e.g. <code>&lt;@YFD6F8X0&gt;</code>. See <a href="#users-api">Users API</a>) on how to retrieve the information about a specific user.</p>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// example of incoming text message with mentions</span>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// receiving a text message with mentions</span>
 <span class="p">{</span>
   <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span> <span class="c1">// id of the channel, where message was sent</span>
   <span class="s2">&quot;user&quot;</span><span class="o">:</span> <span class="s2">&quot;XFD7KDX0&quot;</span><span class="p">,</span> <span class="c1">// id of the user, who sent the message</span>
@@ -156,7 +166,9 @@
 
 </code></pre>
 <p>Same rules apply for the outgoing messages from your bot. Use <code>&lt;@ME&gt;</code> to mention your bot or <code>&lt;@USERID&gt;</code> to mention a user.</p>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// example of outgoing text message</span>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// sending a text message with mentions</span>
+<span class="c1">// POST https://api.botcamp.ai/</span>
+<span class="c1">// Authorization: Bearer ${yourBotToken}</span>
 <span class="p">{</span>
   <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span> <span class="c1">// send message to the channel with this id</span>
   <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="c1">// send a text message</span>
@@ -174,7 +186,8 @@
 <li><code>leave</code>: user left a channel</li>
 <li><code>end</code>: end of the conversation, your bot was removed</li>
 </ul>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// start of the conversation / added to a channel</span>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// receiving an event</span>
+<span class="c1">// start of the conversation / added to a channel</span>
 <span class="p">{</span>
   <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
   <span class="s2">&quot;user&quot;</span><span class="o">:</span> <span class="s2">&quot;XFD7KDX0&quot;</span><span class="p">,</span> <span class="c1">// user who invited you or started a conversation</span>
@@ -185,7 +198,8 @@
 </pre></div>
 
 </code></pre>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// end of the conversation / removed from a channel</span>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// receiving an event</span>
+<span class="c1">// end of the conversation / removed from a channel</span>
 <span class="p">{</span>
   <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
   <span class="s2">&quot;user&quot;</span><span class="o">:</span> <span class="s2">&quot;XFD7KDX0&quot;</span><span class="p">,</span> <span class="c1">// user who removed you or closed the conversation</span>
@@ -196,7 +210,8 @@
 </pre></div>
 
 </code></pre>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// new user joined</span>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// receiving an event</span>
+<span class="c1">// new user joined</span>
 <span class="p">{</span>
   <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
   <span class="s2">&quot;user&quot;</span><span class="o">:</span> <span class="s2">&quot;XFD7KDX0&quot;</span><span class="p">,</span> <span class="c1">// user who joined</span>
@@ -207,7 +222,8 @@
 </pre></div>
 
 </code></pre>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// user left a channel / group</span>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// receiving an event</span>
+<span class="c1">// user left a channel / group</span>
 <span class="p">{</span>
   <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
   <span class="s2">&quot;user&quot;</span><span class="o">:</span> <span class="s2">&quot;XFD7KDX0&quot;</span><span class="p">,</span> <span class="c1">// user who left</span>
@@ -220,7 +236,9 @@
 </code></pre>
 <h2 id="custom-keyboards">Custom keyboards</h2>
 <p>To add a custom keyboard to the message, <code>suggestions</code> property should be specified within a message payload (works for any message type). It should contain a set of strings, that represent the options for a custom keyboard. This functionality works for all platforms, including a fallback for Slack.</p>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// example of outgoing text message with a custom keyboard</span>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// sending a text message with a custom keyboard</span>
+<span class="c1">// POST https://api.botcamp.ai/</span>
+<span class="c1">// Authorization: Bearer ${yourBotToken}</span>
 <span class="p">{</span>
   <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
   <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span>
@@ -233,8 +251,10 @@
 <p>Botcamp utilizes <a href="https://developers.facebook.com/docs/messenger-platform/send-api-reference/quick-replies">quick replies</a> for Facebook Messenger, <a href="https://core.telegram.org/bots/api#replykeyboardmarkup">ReplyKeyboardMarkup</a> for Telegram, <a href="https://dev.kik.com/#/docs/messaging#keyboards">suggested keyboards</a> for Kik and a fallback with a text message with options for Slack.</p>
 <h2 id="users-api">Users API</h2>
 <p>Botcamp provides an API to learn more about your users. Passing user id, you have received in any message, you can access such information like first name, last name, email and much more. Of course, it strictly depends on the type of the messenger being used to send the message.</p>
-<p>Send <code>GET</code> request to <code>https://users.botcamp.ai/${userId}</code> and do not forget to add your token to <code>Authorization</code> header. We do not store any user information and provide it as a proxy, so please be sure you store it in some way on your side.</p>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// GET to https://users.botcamp.ai/XFD7KDX0</span>
+<p>Send <code>GET</code> request to <code>https://user.botcamp.ai/${userId}</code> and do not forget to add your token to <code>Authorization</code> header. We do not store any user information and provide it as a proxy, so please be sure you store it in some way on your side.</p>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// getting user information</span>
+<span class="c1">// GET https://user.botcamp.ai/XFD7KDX0</span>
+<span class="c1">// Authorization: Bearer ${yourBotToken}</span>
 <span class="p">{</span>
   <span class="s2">&quot;username&quot;</span><span class="o">:</span> <span class="s2">&quot;hoxyfoxy&quot;</span><span class="p">,</span>
   <span class="s2">&quot;firstname&quot;</span><span class="o">:</span> <span class="s2">&quot;John&quot;</span><span class="p">,</span>
@@ -246,11 +266,11 @@
 
 </code></pre>
 <h2 id="files-api">Files API</h2>
-<p>Probably you have already noticed, that for security reasons Botcamp hides all the incoming URLs behind its own proxy file server. Same as for the users we do not store any files on our servers. We always include a full URL to all files in any message in the format of <code>https://files.botcamp.ai/${fileId}</code>.</p>
+<p>Probably you have already noticed, that for security reasons Botcamp hides all the incoming URLs behind its own proxy file server. Same as for the users we do not store any files on our servers. We always include a full URL to all files in any message in the format of <code>https://file.botcamp.ai/${fileId}</code>.</p>
 <p>Do not forget to add your token to <code>Authorization</code> header.</p>
 <h2 id="message-examples">Message Examples</h2>
 <h3 id="text-messages">Text Messages</h3>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// example of incoming text message</span>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// receiving a text message</span>
 <span class="p">{</span>
   <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
   <span class="s2">&quot;user&quot;</span><span class="o">:</span> <span class="s2">&quot;XFD7KDX0&quot;</span><span class="p">,</span>
@@ -264,7 +284,9 @@
 </pre></div>
 
 </code></pre>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// example of outgoing text message</span>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// sending a text message</span>
+<span class="c1">// POST https://api.botcamp.ai/</span>
+<span class="c1">// Authorization: Bearer ${yourBotToken}</span>
 <span class="p">{</span>
   <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
   <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span>
@@ -274,7 +296,7 @@
 
 </code></pre>
 <h3 id="links">Links</h3>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// example of incoming link message</span>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// receiving a link message</span>
 <span class="p">{</span>
   <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
   <span class="s2">&quot;user&quot;</span><span class="o">:</span> <span class="s2">&quot;XFD7KDX0&quot;</span><span class="p">,</span>
@@ -288,7 +310,9 @@
 </pre></div>
 
 </code></pre>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// example of outgoing link message</span>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// sending a link message</span>
+<span class="c1">// POST https://api.botcamp.ai/</span>
+<span class="c1">// Authorization: Bearer ${yourBotToken}</span>
 <span class="p">{</span>
   <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
   <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;link&quot;</span><span class="p">,</span>
@@ -298,7 +322,7 @@
 
 </code></pre>
 <h3 id="pictures">Pictures</h3>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// example of incoming picture message</span>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">//receiving a picture message</span>
 <span class="p">{</span>
   <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
   <span class="s2">&quot;user&quot;</span><span class="o">:</span> <span class="s2">&quot;XFD7KDX0&quot;</span><span class="p">,</span>
@@ -312,7 +336,9 @@
 </pre></div>
 
 </code></pre>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// example of outgoing picture message</span>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// sending a picture message</span>
+<span class="c1">// POST https://api.botcamp.ai/</span>
+<span class="c1">// Authorization: Bearer ${yourBotToken}</span>
 <span class="p">{</span>
   <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
   <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;picture&quot;</span><span class="p">,</span>
@@ -322,7 +348,7 @@
 
 </code></pre>
 <h3 id="videos">Videos</h3>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// example of incoming video message</span>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// receiving a video message</span>
 <span class="p">{</span>
   <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
   <span class="s2">&quot;user&quot;</span><span class="o">:</span> <span class="s2">&quot;XFD7KDX0&quot;</span><span class="p">,</span>
@@ -336,7 +362,9 @@
 </pre></div>
 
 </code></pre>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// example of outgoing video message; maximum video size is 15Mb</span>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// sending a video message; maximum video size is 15Mb</span>
+<span class="c1">// POST https://api.botcamp.ai/</span>
+<span class="c1">// Authorization: Bearer ${yourBotToken}</span>
 <span class="p">{</span>
   <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
   <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;video&quot;</span><span class="p">,</span>
@@ -346,7 +374,7 @@
 
 </code></pre>
 <h3 id="files">Files</h3>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// example of incoming file message</span>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// receiving a file message</span>
 <span class="p">{</span>
   <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
   <span class="s2">&quot;user&quot;</span><span class="o">:</span> <span class="s2">&quot;XFD7KDX0&quot;</span><span class="p">,</span>
@@ -360,7 +388,9 @@
 </pre></div>
 
 </code></pre>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// example of outgoing file message</span>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// sending a file message</span>
+<span class="c1">// POST https://api.botcamp.ai/</span>
+<span class="c1">// Authorization: Bearer ${yourBotToken}</span>
 <span class="p">{</span>
   <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
   <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>

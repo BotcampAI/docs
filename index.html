@@ -39,20 +39,30 @@
 <li><a href="#getting-started">Getting Started</a></li>
 <li><a href="#request-authorization">Request Authorization</a></li>
 <li><a href="#configuring-your-bot">Configuring Your Bot</a></li>
-<li><a href="#messages">Messages</a></li>
-<li><a href="#mentions">Mentions</a></li>
-<li><a href="#events">Events</a></li>
-<li><a href="#custom-keyboards">Custom Keyboards</a></li>
-<li><a href="#users-api">Users API</a></li>
-<li><a href="#files-api">Files API</a></li>
-<li><a href="#message-examples">Message Examples</a><ul>
+<li><a href="#receiving-messages">Receiving Messages</a><ul>
 <li><a href="#text-messages">Text Messages</a></li>
+<li><a href="#mentions">Mentions</a></li>
 <li><a href="#links">Links</a></li>
 <li><a href="#pictures">Pictures</a></li>
 <li><a href="#videos">Videos</a></li>
 <li><a href="#files">Files</a></li>
+<li><a href="#locations">Locations</a></li>
+<li><a href="#events">Events</a></li>
 </ul>
 </li>
+<li><a href="#sending-messages">Sending Messages</a><ul>
+<li><a href="#sending-text-messages">Text Messages</a></li>
+<li><a href="#sending-mentions">Mentions</a></li>
+<li><a href="#sending-links">Links</a></li>
+<li><a href="#sending-pictures">Pictures</a></li>
+<li><a href="#sending-videos">Videos</a></li>
+<li><a href="#sending-files">Files</a></li>
+<li><a href="#sending-locations">Locations</a></li>
+<li><a href="#custom-keyboards">Custom Keyboards</a></li>
+</ul>
+</li>
+<li><a href="#users-api">Users API</a></li>
+<li><a href="#files-api">Files API</a></li>
 <li><a href="#questions-feature-requests-and-bug-reports">Questions, Feature Requests and Bug Reports</a></li>
 </ul>
 <h2 id="getting-started">Getting Started</h2>
@@ -76,8 +86,8 @@
 
 </code></pre>
 <ul>
-<li><code>protocol</code>: <em>string</em>. Protocol you are going to use, <code>ws</code> or <code>http</code>.</li>
-<li><code>webhook</code>: <em>string</em>, <strong>optional in case of protocol=&#39;ws&#39;</strong>. Should contain an URL of your bot server webhook, that will be triggered each time we receive any message from your users. Required only if <code>protocol</code> is <code>http</code>.</li>
+<li><strong><code>protocol</code></strong>: <em>string</em>. Protocol you are going to use, <code>ws</code> or <code>http</code>.</li>
+<li><strong><code>webhook</code></strong>: <em>string</em>, <strong>optional in case of protocol=&#39;ws&#39;</strong>. Should contain an URL of your bot server webhook, that will be triggered each time we receive any message from your users. Required only if <code>protocol</code> is <code>http</code>.</li>
 </ul>
 <p>Depending on the protocol chosen, the server responses with an object which contains URL to connect or post messages to:</p>
 <pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// POST https://api.botcamp.ai/hi</span>
@@ -99,57 +109,38 @@
 </pre></div>
 
 </code></pre>
-<h2 id="messages">Messages</h2>
+<h2 id="receiving-messages">Receiving Messages</h2>
 <p>Botcamp transforms incoming messages from all the platforms, and unifies their format. Apart from the important information, you receive some helper properties to ease your work.</p>
 <ul>
-<li><code>channel</code>: <em>channel id string</em>. Channel id, where channel is a user or group of users.</li>
-<li><code>user</code>: <em>user id string</em>. User id, where user is the user, who sends a message, uploads a file, or initiates an event.</li>
-<li><code>type</code>: <em>enum</em>. Type of the message, one of the following <code>text</code>, <code>file</code>, <code>link</code>, <code>picture</code>, <code>video</code> or <code>event</code>.</li>
-<li><code>text</code>: <em>string</em>, <strong>optional</strong>. Text message content or event type, if <code>type</code> of the message is <code>event</code>.</li>
-<li><code>url</code>: <em>url string</em>, <strong>optional</strong>. URL of video, photo, link or file.</li>
-<li><code>mentions</code>: <em>array of user id strings</em>. Array of the user ids mentioned in the message. Doesn&#39;t contain your bot id. If the bot was mentioned, see <code>mentioned</code> field.</li>
-<li><code>mentioned</code>: <em>boolean</em>. Determines whether bot was mentioned in the message.</li>
-<li><code>direct</code>: <em>bool</em>. True if it&#39;s a direct message to your bot.</li>
-<li><code>timestamp</code>: <em>timestamp</em>. In milliseconds.</li>
-<li><code>suggestions</code>: <em>array of strings</em>. A set of quick reply options for the user (custom keyboard).</li>
-<li><code>token</code>: <em>token string</em>. <strong>optional</strong>. It&#39;s a required field in case you&#39;re using websockets. In case of HTTP API, please, use <code>Authorization</code> header.</li>
+<li><strong><code>channel</code></strong>: <em>channel id string</em>. Channel id, where channel is a user or group of users.</li>
+<li><strong><code>user</code></strong>: <em>user id string</em>. User id, where user is the user, who sends a message, uploads a file, or initiates an event.</li>
+<li><strong><code>type</code></strong>: <em>enum</em>. Type of the message, one of the following <code>text</code>, <code>file</code>, <code>link</code>, <code>picture</code>, <code>video</code>, <code>location</code> or <code>event</code>.</li>
+<li><strong><code>text</code></strong>: <em>string</em>, <strong>optional</strong>. Text message content, event type (if <code>type</code> of the message is <code>event</code>) or title of a location shared (if <code>type</code> is <code>location</code>). Mentions of the users appear within the text message as <code>&lt;@USERID&gt;</code>. Mentions of your bot are marked as <code>&lt;@ME&gt;</code>.</li>
+<li><strong><code>url</code></strong>: <em>url string</em>, <strong>optional</strong>. URL of video, photo, link or file.</li>
+<li><strong><code>mentions</code></strong>: <em>array of user id strings</em>. Array of the user ids mentioned in the message. Doesn&#39;t contain your bot id. If the bot was mentioned, see <code>mentioned</code> field.</li>
+<li><strong><code>mentioned</code></strong>: <em>boolean</em>. Determines whether bot was mentioned in the message.</li>
+<li><strong><code>direct</code></strong>: <em>bool</em>. True if it&#39;s a direct message to your bot.</li>
+<li><strong><code>timestamp</code></strong>: <em>timestamp</em>. In milliseconds.</li>
+<li><strong><code>latitude</code></strong>: <em>number</em>, <strong>optional</strong>. Latitude of a location shared. Only for messages with type <code>location</code>.</li>
+<li><strong><code>longitude</code></strong>: <em>number</em>, <strong>optional</strong>. Longitude of a location shared. Only for messages with type <code>location</code>.</li>
 </ul>
-<p>Example of the incoming message (Botcamp makes a call to your bot&#39;s webhook):</p>
+<h3 id="text-messages">Text Messages</h3>
+<p>Example of the incoming message (Botcamp makes a call to your bot&#39;s webhook or websocket client):</p>
 <pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// receiving a text message</span>
 <span class="p">{</span>
   <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span> <span class="c1">// id of the channel, where message was sent</span>
   <span class="s2">&quot;user&quot;</span><span class="o">:</span> <span class="s2">&quot;XFD7KDX0&quot;</span><span class="p">,</span> <span class="c1">// id of the user, who sent the message</span>
   <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="c1">// this is a simple text message</span>
-  <span class="s2">&quot;text&quot;</span><span class="o">:</span> <span class="s2">&quot;this is a text message&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;text&quot;</span><span class="o">:</span> <span class="s2">&quot;Hi! How&#39;s that feels to be a bot?&quot;</span><span class="p">,</span> <span class="c1">// your bot&#39;s username was replaced with &lt;@ME&gt;</span>
   <span class="s2">&quot;mentions&quot;</span><span class="o">:</span> <span class="p">[],</span> <span class="c1">// no mentions of other users were found in this message</span>
   <span class="s2">&quot;mentioned&quot;</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span> <span class="c1">// your bot were not mentioned in the message</span>
-  <span class="s2">&quot;direct&quot;</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span> <span class="c1">// it&#39;s a group message, other users may be present on this channel</span>
+  <span class="s2">&quot;direct&quot;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span> <span class="c1">// it&#39;s a group message, other users may be present on this channel</span>
   <span class="s2">&quot;timestamp&quot;</span><span class="o">:</span> <span class="mi">1463487634001</span>
 <span class="p">}</span>
 </pre></div>
 
 </code></pre>
-<p>Outgoing messages should contain the next fields:</p>
-<ul>
-<li><code>channel</code>: <em>channel id string</em>. Channel id, where channel is a user or group of users.</li>
-<li><code>type</code>: <em>enum</em>. Type of the message, one of the following <code>text</code>, <code>file</code>, <code>link</code>, <code>picture</code>, <code>video</code> or <code>event</code>.</li>
-<li><code>text</code>: <em>string</em>, <strong>optional</strong>. Text message content or event type, if <code>type</code> of the message is <code>event</code>. If you want to mention a user, use the next construction anywhere within your text <code>&lt;@USERID&gt;</code>. To mention your bot itself simply use <code>&lt;@ME&gt;</code>.</li>
-<li><code>url</code>: <em>url string</em>, <strong>optional</strong>. URL of video, photo, link or file.</li>
-</ul>
-<p>Here is an example of your bot&#39;s message:</p>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// sending a text message</span>
-<span class="c1">// POST https://api.botcamp.ai/</span>
-<span class="c1">// Authorization: Bearer ${yourBotToken}</span>
-<span class="p">{</span>
-  <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span> <span class="c1">// send message to the channel with this id</span>
-  <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="c1">// send a text message</span>
-  <span class="s2">&quot;text&quot;</span><span class="o">:</span> <span class="s2">&quot;Hi, nice to meet you.&quot;</span>
-<span class="p">}</span>
-</pre></div>
-
-</code></pre>
-<p>For more examples on different types of messages, please, see <a href="#message-examples">Message Examples</a>.</p>
-<h2 id="mentions">Mentions</h2>
+<h3 id="mentions">Mentions</h3>
 <p>Botcamp provides you with the list of users mentioned in a message (<code>mentions</code> property of an incoming message, see <a href="#messages">messages format</a> for more information), as well as with the information whether your bot is being mentioned or not (<code>mentioned</code> property). Your bot username is replaced with <code>&lt;@ME&gt;</code> placeholder, other users are represented in a format of <code>&lt;@USERID&gt;</code>, e.g. <code>&lt;@YFD6F8X0&gt;</code>. See <a href="#users-api">Users API</a>) on how to retrieve the information about a specific user.</p>
 <pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// receiving a text message with mentions</span>
 <span class="p">{</span>
@@ -165,26 +156,92 @@
 </pre></div>
 
 </code></pre>
-<p>Same rules apply for the outgoing messages from your bot. Use <code>&lt;@ME&gt;</code> to mention your bot or <code>&lt;@USERID&gt;</code> to mention a user.</p>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// sending a text message with mentions</span>
-<span class="c1">// POST https://api.botcamp.ai/</span>
-<span class="c1">// Authorization: Bearer ${yourBotToken}</span>
+<h3 id="links">Links</h3>
+<p>Remember, that <code>link</code> message doesn&#39;t contain <code>text</code> property. It has <code>url</code> instead.</p>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// receiving a link message</span>
 <span class="p">{</span>
-  <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span> <span class="c1">// send message to the channel with this id</span>
-  <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="c1">// send a text message</span>
-  <span class="s2">&quot;text&quot;</span><span class="o">:</span> <span class="s2">&quot;Hi, &lt;@ME&gt; is here to help! What time do you prefer for the meeting with &lt;@YFD6F8X0&gt;?&quot;</span>
+  <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;user&quot;</span><span class="o">:</span> <span class="s2">&quot;XFD7KDX0&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;link&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;url&quot;</span><span class="o">:</span> <span class="s2">&quot;https://www.facebook.com&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;mentions&quot;</span><span class="o">:</span> <span class="p">[],</span>
+  <span class="s2">&quot;mentioned&quot;</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+  <span class="s2">&quot;direct&quot;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="s2">&quot;timestamp&quot;</span><span class="o">:</span> <span class="mi">1463487634001</span>
 <span class="p">}</span>
 </pre></div>
 
 </code></pre>
-<h2 id="events">Events</h2>
+<h3 id="pictures">Pictures</h3>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">//receiving a picture message</span>
+<span class="p">{</span>
+  <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;user&quot;</span><span class="o">:</span> <span class="s2">&quot;XFD7KDX0&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;picture&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;url&quot;</span><span class="o">:</span> <span class="s2">&quot;https://files.botcamp.ai/FKVF9KTZ/YX431AG2&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;mentions&quot;</span><span class="o">:</span> <span class="p">[],</span>
+  <span class="s2">&quot;mentioned&quot;</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+  <span class="s2">&quot;direct&quot;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="s2">&quot;timestamp&quot;</span><span class="o">:</span> <span class="mi">1463487634001</span>
+<span class="p">}</span>
+</pre></div>
+
+</code></pre>
+<h3 id="videos">Videos</h3>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// receiving a video message</span>
+<span class="p">{</span>
+  <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;user&quot;</span><span class="o">:</span> <span class="s2">&quot;XFD7KDX0&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;video&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;url&quot;</span><span class="o">:</span> <span class="s2">&quot;https://files.botcamp.ai/HFGDY64J&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;mentions&quot;</span><span class="o">:</span> <span class="p">[],</span>
+  <span class="s2">&quot;mentioned&quot;</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+  <span class="s2">&quot;direct&quot;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="s2">&quot;timestamp&quot;</span><span class="o">:</span> <span class="mi">1463487634001</span>
+<span class="p">}</span>
+</pre></div>
+
+</code></pre>
+<h3 id="files">Files</h3>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// receiving a file message</span>
+<span class="p">{</span>
+  <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;user&quot;</span><span class="o">:</span> <span class="s2">&quot;XFD7KDX0&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;url&quot;</span><span class="o">:</span> <span class="s2">&quot;https://files.botcamp.ai/JI431AG2&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;mentions&quot;</span><span class="o">:</span> <span class="p">[],</span>
+  <span class="s2">&quot;mentioned&quot;</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+  <span class="s2">&quot;direct&quot;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="s2">&quot;timestamp&quot;</span><span class="o">:</span> <span class="mi">1463487634001</span>
+<span class="p">}</span>
+</pre></div>
+
+</code></pre>
+<h3 id="locations">Locations</h3>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// receiving a location</span>
+<span class="p">{</span>
+  <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;user&quot;</span><span class="o">:</span> <span class="s2">&quot;XFD7KDX0&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;location&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;text&quot;</span><span class="o">:</span> <span class="s2">&quot;Joe&#39;s current location&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;latitude&quot;</span><span class="o">:</span> <span class="mf">4.9167593510755</span><span class="p">,</span>
+  <span class="s2">&quot;longitude&quot;</span><span class="o">:</span> <span class="mf">52.369026792616</span><span class="p">,</span>
+  <span class="s2">&quot;mentions&quot;</span><span class="o">:</span> <span class="p">[],</span>
+  <span class="s2">&quot;mentioned&quot;</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+  <span class="s2">&quot;direct&quot;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="s2">&quot;timestamp&quot;</span><span class="o">:</span> <span class="mi">1463487634001</span>
+<span class="p">}</span>
+</pre></div>
+
+</code></pre>
+<h3 id="events">Events</h3>
 <p>Events are a special type of <em>only incoming messages</em>. It helps your bot better to understand the context of what&#39;s happening, e.g. user has left the channel or started typing something.</p>
 <p>Botcamp now supports the following types of the events:</p>
 <ul>
-<li><code>start</code>: start of the conversation, your bot was added</li>
-<li><code>join</code>: user joined a channel</li>
-<li><code>leave</code>: user left a channel</li>
-<li><code>end</code>: end of the conversation, your bot was removed</li>
+<li><strong><code>start</code></strong>: start of the conversation, your bot was added</li>
+<li><strong><code>join</code></strong>: user joined a channel</li>
+<li><strong><code>leave</code></strong>: user left a channel</li>
+<li><strong><code>end</code></strong>: end of the conversation, your bot was removed</li>
 </ul>
 <pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// receiving an event</span>
 <span class="c1">// start of the conversation / added to a channel</span>
@@ -234,7 +291,113 @@
 </pre></div>
 
 </code></pre>
-<h2 id="custom-keyboards">Custom keyboards</h2>
+<h2 id="sending-messages">Sending Messages</h2>
+<p>Outgoing messages should contain the next set of fields:</p>
+<ul>
+<li><strong><code>channel</code></strong>: <em>channel id string</em>. Channel id, where channel is a user or group of users.</li>
+<li><strong><code>type</code></strong>: <em>enum</em>. Type of the message, one of the following <code>text</code>, <code>file</code>, <code>link</code>, <code>picture</code>, <code>video</code>, <code>event</code> or <code>location</code>.</li>
+<li><strong><code>text</code></strong>: <em>string</em>, <strong>optional</strong>. Text message content or a shared location title, if <code>type</code> of the message is <code>location</code>**. If you want to mention a user, use the construction <code>&lt;@USERID&gt;</code> anywhere within the text message. To mention your bot itself simply use <code>&lt;@ME&gt;</code>.</li>
+<li><strong><code>url</code></strong>: <em>url string</em>, <strong>optional</strong>. URL of video, photo, link or file.</li>
+<li><strong><code>latitude</code></strong>: <em>number</em>, <strong>optional</strong>. Latitude of a location shared. Only for messages with type <code>location</code>.</li>
+<li><strong><code>longitude</code></strong>: <em>number</em>, <strong>optional</strong>. Longitude of a location shared. Only for messages with type <code>location</code>.</li>
+<li><strong><code>suggestions</code></strong>: <em>array of strings</em>. A set of quick reply options for the user (custom keyboard).</li>
+<li><strong><code>token</code></strong>: <em>token string</em>. <strong>optional</strong>. It&#39;s a required field in case you&#39;re using websockets. In case of HTTP API, please, use <code>Authorization</code> header.</li>
+</ul>
+<h3 id="-a-name-sending-text-messages-a-text-messages"><a name="sending-text-messages"></a>Text Messages</h3>
+<p>Here is an example of your bot&#39;s message to the user:</p>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// sending a text message</span>
+<span class="c1">// POST https://api.botcamp.ai/</span>
+<span class="c1">// Authorization: Bearer ${yourBotToken}</span>
+<span class="p">{</span>
+  <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span> <span class="c1">// send message to the channel with this id</span>
+  <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="c1">// send a text message</span>
+  <span class="s2">&quot;text&quot;</span><span class="o">:</span> <span class="s2">&quot;Hi, nice to meet you.&quot;</span>
+<span class="p">}</span>
+</pre></div>
+
+</code></pre>
+<h3 id="-a-name-sending-mentions-a-mentions"><a name="sending-mentions"></a>Mentions</h3>
+<p>Same rules for mentioning users apply for outgoing messages. Use <code>&lt;@ME&gt;</code> to mention your bot or <code>&lt;@USERID&gt;</code> to mention a user.</p>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// sending a text message with mentions</span>
+<span class="c1">// POST https://api.botcamp.ai/</span>
+<span class="c1">// Authorization: Bearer ${yourBotToken}</span>
+<span class="p">{</span>
+  <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span> <span class="c1">// send message to the channel with this id</span>
+  <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="c1">// send a text message</span>
+  <span class="s2">&quot;text&quot;</span><span class="o">:</span> <span class="s2">&quot;Hi, &lt;@ME&gt; is here to help! What time do you prefer for the meeting with &lt;@YFD6F8X0&gt;?&quot;</span>
+<span class="p">}</span>
+</pre></div>
+
+</code></pre>
+<h3 id="-a-name-sending-links-a-links"><a name="sending-links"></a>Links</h3>
+<p>Pass a link you want to share within <code>url</code> property:</p>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// sending a link message</span>
+<span class="c1">// POST https://api.botcamp.ai/</span>
+<span class="c1">// Authorization: Bearer ${yourBotToken}</span>
+<span class="p">{</span>
+  <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;link&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;url&quot;</span><span class="o">:</span> <span class="s2">&quot;https://www.facebook.com&quot;</span>
+<span class="p">}</span>
+</pre></div>
+
+</code></pre>
+<h3 id="-a-name-sending-pictures-a-pictures"><a name="sending-pictures"></a>Pictures</h3>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// sending a picture message</span>
+<span class="c1">// POST https://api.botcamp.ai/</span>
+<span class="c1">// Authorization: Bearer ${yourBotToken}</span>
+<span class="p">{</span>
+  <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;picture&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;url&quot;</span><span class="o">:</span> <span class="s2">&quot;http://www.aagga.com/wp-content/uploads/2016/02/Sample.jpg&quot;</span>
+<span class="p">}</span>
+</pre></div>
+
+</code></pre>
+<h3 id="-a-name-sending-videos-a-videos"><a name="sending-videos"></a>Videos</h3>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// sending a video message; maximum video size is 15Mb</span>
+<span class="c1">// POST https://api.botcamp.ai/</span>
+<span class="c1">// Authorization: Bearer ${yourBotToken}</span>
+<span class="p">{</span>
+  <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;video&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;url&quot;</span><span class="o">:</span> <span class="s2">&quot;http://download.wavetlan.com/SVV/Media/HTTP/H264/Talkinghead_Media/H264_test1_Talkinghead_mp4_480x360.mp4&quot;</span>
+<span class="p">}</span>
+</pre></div>
+
+</code></pre>
+<h3 id="-a-name-sending-files-a-files"><a name="sending-files"></a>Files</h3>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// sending a file message</span>
+<span class="c1">// POST https://api.botcamp.ai/</span>
+<span class="c1">// Authorization: Bearer ${yourBotToken}</span>
+<span class="p">{</span>
+  <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;url&quot;</span><span class="o">:</span> <span class="s2">&quot;http://www.pdf995.com/samples/pdf.pdf&quot;</span>
+<span class="p">}</span>
+</pre></div>
+
+</code></pre>
+<h3 id="-a-name-sending-locations-a-locations"><a name="sending-locations"></a>Locations</h3>
+<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// sending a location</span>
+<span class="c1">// POST https://api.botcamp.ai/</span>
+<span class="c1">// Authorization: Bearer ${yourBotToken}</span>
+<span class="p">{</span>
+  <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;user&quot;</span><span class="o">:</span> <span class="s2">&quot;XFD7KDX0&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;location&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;text&quot;</span><span class="o">:</span> <span class="s2">&quot;Bakers and Roasters&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;latitude&quot;</span><span class="o">:</span> <span class="mf">4.9167593510755</span><span class="p">,</span>
+  <span class="s2">&quot;longitude&quot;</span><span class="o">:</span> <span class="mf">52.362026792616</span><span class="p">,</span>
+  <span class="s2">&quot;mentions&quot;</span><span class="o">:</span> <span class="p">[],</span>
+  <span class="s2">&quot;mentioned&quot;</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+  <span class="s2">&quot;direct&quot;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="s2">&quot;timestamp&quot;</span><span class="o">:</span> <span class="mi">1463487634001</span>
+<span class="p">}</span>
+</pre></div>
+
+</code></pre>
+<h3 id="custom-keyboards">Custom keyboards</h3>
 <p>To add a custom keyboard to the message, <code>suggestions</code> property should be specified within a message payload (works for any message type). It should contain a set of strings, that represent the options for a custom keyboard. This functionality works for all platforms, including a fallback for Slack.</p>
 <pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// sending a text message with a custom keyboard</span>
 <span class="c1">// POST https://api.botcamp.ai/</span>
@@ -268,137 +431,6 @@
 <h2 id="files-api">Files API</h2>
 <p>Probably you have already noticed, that for security reasons Botcamp hides all the incoming URLs behind its own proxy file server. Same as for the users we do not store any files on our servers. We always include a full URL to all files in any message in the format of <code>https://file.botcamp.ai/${fileId}</code>.</p>
 <p>Do not forget to add your token to <code>Authorization</code> header.</p>
-<h2 id="message-examples">Message Examples</h2>
-<h3 id="text-messages">Text Messages</h3>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// receiving a text message</span>
-<span class="p">{</span>
-  <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;user&quot;</span><span class="o">:</span> <span class="s2">&quot;XFD7KDX0&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;text&quot;</span><span class="o">:</span> <span class="s2">&quot;this is a text message&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;mentions&quot;</span><span class="o">:</span> <span class="p">[],</span>
-  <span class="s2">&quot;mentioned&quot;</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
-  <span class="s2">&quot;direct&quot;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-  <span class="s2">&quot;timestamp&quot;</span><span class="o">:</span> <span class="mi">1463487634001</span>
-<span class="p">}</span>
-</pre></div>
-
-</code></pre>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// sending a text message</span>
-<span class="c1">// POST https://api.botcamp.ai/</span>
-<span class="c1">// Authorization: Bearer ${yourBotToken}</span>
-<span class="p">{</span>
-  <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;text&quot;</span><span class="o">:</span> <span class="s2">&quot;Hi, &lt;@XFD7KDX0&gt;, my name is &lt;@ME&gt;.&quot;</span>
-<span class="p">}</span>
-</pre></div>
-
-</code></pre>
-<h3 id="links">Links</h3>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// receiving a link message</span>
-<span class="p">{</span>
-  <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;user&quot;</span><span class="o">:</span> <span class="s2">&quot;XFD7KDX0&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;link&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;url&quot;</span><span class="o">:</span> <span class="s2">&quot;https://www.facebook.com&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;mentions&quot;</span><span class="o">:</span> <span class="p">[],</span>
-  <span class="s2">&quot;mentioned&quot;</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
-  <span class="s2">&quot;direct&quot;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-  <span class="s2">&quot;timestamp&quot;</span><span class="o">:</span> <span class="mi">1463487634001</span>
-<span class="p">}</span>
-</pre></div>
-
-</code></pre>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// sending a link message</span>
-<span class="c1">// POST https://api.botcamp.ai/</span>
-<span class="c1">// Authorization: Bearer ${yourBotToken}</span>
-<span class="p">{</span>
-  <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;link&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;url&quot;</span><span class="o">:</span> <span class="s2">&quot;https://www.facebook.com&quot;</span>
-<span class="p">}</span>
-</pre></div>
-
-</code></pre>
-<h3 id="pictures">Pictures</h3>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">//receiving a picture message</span>
-<span class="p">{</span>
-  <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;user&quot;</span><span class="o">:</span> <span class="s2">&quot;XFD7KDX0&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;picture&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;url&quot;</span><span class="o">:</span> <span class="s2">&quot;https://files.botcamp.ai/FKVF9KTZ/YX431AG2&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;mentions&quot;</span><span class="o">:</span> <span class="p">[],</span>
-  <span class="s2">&quot;mentioned&quot;</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
-  <span class="s2">&quot;direct&quot;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-  <span class="s2">&quot;timestamp&quot;</span><span class="o">:</span> <span class="mi">1463487634001</span>
-<span class="p">}</span>
-</pre></div>
-
-</code></pre>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// sending a picture message</span>
-<span class="c1">// POST https://api.botcamp.ai/</span>
-<span class="c1">// Authorization: Bearer ${yourBotToken}</span>
-<span class="p">{</span>
-  <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;picture&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;url&quot;</span><span class="o">:</span> <span class="s2">&quot;http://www.aagga.com/wp-content/uploads/2016/02/Sample.jpg&quot;</span>
-<span class="p">}</span>
-</pre></div>
-
-</code></pre>
-<h3 id="videos">Videos</h3>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// receiving a video message</span>
-<span class="p">{</span>
-  <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;user&quot;</span><span class="o">:</span> <span class="s2">&quot;XFD7KDX0&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;video&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;url&quot;</span><span class="o">:</span> <span class="s2">&quot;https://files.botcamp.ai/HFGDY64J&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;mentions&quot;</span><span class="o">:</span> <span class="p">[],</span>
-  <span class="s2">&quot;mentioned&quot;</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
-  <span class="s2">&quot;direct&quot;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-  <span class="s2">&quot;timestamp&quot;</span><span class="o">:</span> <span class="mi">1463487634001</span>
-<span class="p">}</span>
-</pre></div>
-
-</code></pre>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// sending a video message; maximum video size is 15Mb</span>
-<span class="c1">// POST https://api.botcamp.ai/</span>
-<span class="c1">// Authorization: Bearer ${yourBotToken}</span>
-<span class="p">{</span>
-  <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;video&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;url&quot;</span><span class="o">:</span> <span class="s2">&quot;http://download.wavetlan.com/SVV/Media/HTTP/H264/Talkinghead_Media/H264_test1_Talkinghead_mp4_480x360.mp4&quot;</span>
-<span class="p">}</span>
-</pre></div>
-
-</code></pre>
-<h3 id="files">Files</h3>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// receiving a file message</span>
-<span class="p">{</span>
-  <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;user&quot;</span><span class="o">:</span> <span class="s2">&quot;XFD7KDX0&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;url&quot;</span><span class="o">:</span> <span class="s2">&quot;https://files.botcamp.ai/JI431AG2&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;mentions&quot;</span><span class="o">:</span> <span class="p">[],</span>
-  <span class="s2">&quot;mentioned&quot;</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
-  <span class="s2">&quot;direct&quot;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-  <span class="s2">&quot;timestamp&quot;</span><span class="o">:</span> <span class="mi">1463487634001</span>
-<span class="p">}</span>
-</pre></div>
-
-</code></pre>
-<pre><code class="lang-javascript"><div class="highlight"><pre><span class="c1">// sending a file message</span>
-<span class="c1">// POST https://api.botcamp.ai/</span>
-<span class="c1">// Authorization: Bearer ${yourBotToken}</span>
-<span class="p">{</span>
-  <span class="s2">&quot;channel&quot;</span><span class="o">:</span> <span class="s2">&quot;FKVF9KTZ&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;file&quot;</span><span class="p">,</span>
-  <span class="s2">&quot;url&quot;</span><span class="o">:</span> <span class="s2">&quot;http://www.pdf995.com/samples/pdf.pdf&quot;</span>
-<span class="p">}</span>
-</pre></div>
-
-</code></pre>
 <h2 id="questions-feature-requests-and-bug-reports">Questions, Feature Requests and Bug Reports</h2>
 <p>If you have a bug report, a feature request in your mind, or just stuck somewhere and need help, please, <a href="https://github.com/BotcampAI/support">file a ticket</a>. We will be happy to help you.</p>
 

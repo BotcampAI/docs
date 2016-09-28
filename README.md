@@ -12,6 +12,7 @@
   - [Files](#files)
   - [Locations](#locations)
   - [Events](#events)
+  - [Metadata](#metadata)
 - [Sending Messages](#sending-messages)
   - [Text Messages](#sending-text-messages)
   - [Mentions](#sending-mentions)
@@ -21,6 +22,8 @@
   - [Files](#sending-files)
   - [Locations](#sending-locations)
   - [Custom Keyboards](#custom-keyboards)
+  - [Custom Messages](#custom-messages)
+- [Channels API](#channels-api)
 - [Users API](#users-api)
 - [Files API](#files-api)
 - [Questions, Feature Requests and Bug Reports](#questions-feature-requests-and-bug-reports)
@@ -50,12 +53,14 @@ To configure your bot and to get it online on all the platforms  you need to sen
 // Authorization: Bearer ${yourBotToken}
 {
   "protocol": "http",
-  "webhook": "http://your-webdomain.com/bot-webhook"
+  "webhook": "http://your-webdomain.com/bot-webhook",
+  "meta": true
 }
 ```
 
 - **`protocol`**: *string*. Protocol you are going to use, `ws` or `http`.
 - **`webhook`**: *string*, **optional in case of protocol='ws'**. Should contain an URL of your bot server webhook, that will be triggered each time we receive any message from your users. Required only if `protocol` is `http`.
+- **`meta`**: *boolean*, **optional, false by default**. Defines whether to include meta information into a message or not. Meta information contains an initial message in the format of the platform, user and channel properties. Keep it turned on in case your bot is going to use any platform-specific message types Botcamp does not support yet.
 
 Depending on the protocol chosen, the server responses with an object which contains URL to connect or post messages to:
 
@@ -83,10 +88,12 @@ In case of websockets:
 
 Botcamp transforms incoming messages from all the platforms, and unifies their format. Apart from the important information, you receive some helper properties to ease your work.
 
+- **`platform`**: *platform string*. `slack`, `kik`, `telegram` or `messenger`.
 - **`channel`**: *channel id string*. Channel id, where channel is a user or group of users.
 - **`user`**: *user id string*. User id, where user is the user, who sends a message, uploads a file, or initiates an event.
 - **`type`**: *enum*. Type of the message, one of the following `text`, `file`, `link`, `picture`, `video`, `location` or `event`.
-- **`text`**: *string*, **optional**. Text message content, event type (if `type` of the message is `event`) or title of a location shared (if `type` is `location`). Mentions of the users appear within the text message as `<@USERID>`. Mentions of your bot are marked as `<@ME>`.
+- **`text`**: *string*, **optional**. Text message content or event type (if `type` of the message is `event`). Mentions of the users appear within the text message as `<@USERID>`. Mentions of your bot are marked as `<@ME>`.
+- **`title`**: *string*, **optional**. Location title.
 - **`url`**: *url string*, **optional**. URL of video, photo, link or file.
 - **`mentions`**: *array of user id strings*. Array of the user ids mentioned in the message. Doesn't contain your bot id. If the bot was mentioned, see `mentioned` field.
 - **`mentioned`**: *boolean*. Determines whether bot was mentioned in the message.
@@ -94,6 +101,7 @@ Botcamp transforms incoming messages from all the platforms, and unifies their f
 - **`timestamp`**: *timestamp*. In milliseconds.
 - **`latitude`**: *number*, **optional**. Latitude of a location shared. Only for messages with type `location`.
 - **`longitude`**: *number*, **optional**. Longitude of a location shared. Only for messages with type `location`.
+- **`meta`**: *object*, **optional**. Contains `message`, `channel` and `user` properties.
 
 ### Text Messages
 
@@ -102,6 +110,7 @@ Example of the incoming message (Botcamp makes a call to your bot's webhook or w
 ```javascript
 // receiving a text message
 {
+  "platform": "messenger",
   "channel": "FKVF9KTZ", // id of the channel, where message was sent
   "user": "XFD7KDX0", // id of the user, who sent the message
   "type": "text", // this is a simple text message
@@ -120,6 +129,7 @@ Botcamp provides you with the list of users mentioned in a message (`mentions` p
 ```javascript
 // receiving a text message with mentions
 {
+  "platform": "messenger",
   "channel": "FKVF9KTZ", // id of the channel, where message was sent
   "user": "XFD7KDX0", // id of the user, who sent the message
   "type": "text", // this is a simple text message
@@ -138,6 +148,7 @@ Remember, that `link` message doesn't contain `text` property. It has `url` inst
 ```javascript
 // receiving a link message
 {
+  "platform": "kik",
   "channel": "FKVF9KTZ",
   "user": "XFD7KDX0",
   "type": "link",
@@ -154,6 +165,7 @@ Remember, that `link` message doesn't contain `text` property. It has `url` inst
 ```javascript
 //receiving a picture message
 {
+  "platform": "slack",
   "channel": "FKVF9KTZ",
   "user": "XFD7KDX0",
   "type": "picture",
@@ -170,6 +182,7 @@ Remember, that `link` message doesn't contain `text` property. It has `url` inst
 ```javascript
 // receiving a video message
 {
+  "platform": "kik",
   "channel": "FKVF9KTZ",
   "user": "XFD7KDX0",
   "type": "video",
@@ -186,6 +199,7 @@ Remember, that `link` message doesn't contain `text` property. It has `url` inst
 ```javascript
 // receiving a file message
 {
+  "platform": "telegram",
   "channel": "FKVF9KTZ",
   "user": "XFD7KDX0",
   "type": "file",
@@ -202,10 +216,11 @@ Remember, that `link` message doesn't contain `text` property. It has `url` inst
 ```javascript
 // receiving a location
 {
+  "platform": "messenger",
   "channel": "FKVF9KTZ",
   "user": "XFD7KDX0",
   "type": "location",
-  "text": "Joe's current location",
+  "title": "Joe's current location",
   "latitude": 4.9167593510755,
   "longitude": 52.369026792616,
   "mentions": [],
@@ -229,6 +244,7 @@ Botcamp now supports the following types of the events:
 // receiving an event
 // start of the conversation / added to a channel
 {
+  "platform": "messenger",
   "channel": "FKVF9KTZ",
   "user": "XFD7KDX0", // user who invited you or started a conversation
   "type": "event",
@@ -241,6 +257,7 @@ Botcamp now supports the following types of the events:
 // receiving an event
 // end of the conversation / removed from a channel
 {
+  "platform": "slack",
   "channel": "FKVF9KTZ",
   "user": "XFD7KDX0", // user who removed you or closed the conversation
   "type": "event",
@@ -253,6 +270,7 @@ Botcamp now supports the following types of the events:
 // receiving an event
 // new user joined
 {
+  "platform": "telegram",
   "channel": "FKVF9KTZ",
   "user": "XFD7KDX0", // user who joined
   "type": "event",
@@ -265,6 +283,7 @@ Botcamp now supports the following types of the events:
 // receiving an event
 // user left a channel / group
 {
+  "platform": "slack",
   "channel": "FKVF9KTZ",
   "user": "XFD7KDX0", // user who left
   "type": "event",
@@ -273,18 +292,62 @@ Botcamp now supports the following types of the events:
 }
 ```
 
+### Metadata
+
+In order to receive additional information right together with Botcamp message payload, you've must been specified it during your bot configuration, setting `meta` to `true` (see [Configuring your bot](#configuring-your-bot) section).
+
+In this case each message payload is going to be extended with a `meta` property, which contains:
+
+- **`message`**: *object*. Unmodified incoming message in the format of the platform.
+- **`channel`**: *object*. Additional channel properties such as `chatId` for kik or `channel` for slack. To get more information about the channels use [Channels API](#channels-api).
+- **`user`**: *object*. Additional user properties such as `user` for slack or `username` for telegram. To get more information about the users use [Users API](#users-api).
+
+```javascript
+// receiving a text message with metadata
+{
+  "platform": "slack",
+  "channel": "FKBRQGJL",
+  "user": "FKEYWGC9",
+  "type": "text",
+  "text": "Hey mate!",
+  "mentioned": false,
+  "mentions": [],
+  "direct": true,
+  "timestamp": 1463487644001,
+  "meta": {
+    "message": {
+      "type": "message",
+      "channel": "D0XBUF960",
+      "user": "U0WIAG4XF",
+      "text": "Hey mate!",
+      "ts": "1475070302.000002",
+      "team": "T0XFNKJ4X"
+    },
+    "user": {
+      "user": "U0WIAG4XF"
+    },
+    "channel": {
+      "team": "T0XFNKJ4X",
+      "channel": "D0XBUF960"
+    }
+  }
+}
+```
+
 ## Sending Messages
 
 Outgoing messages should contain the next set of fields:
 
 - **`channel`**: *channel id string*. Channel id, where channel is a user or group of users.
-- **`type`**: *enum*. Type of the message, one of the following `text`, `file`, `link`, `picture`, `video`, `event` or `location`.
-- **`text`**: *string*, **optional**. Text message content or a shared location title, if `type` of the message is `location`**. If you want to mention a user, use the construction `<@USERID>` anywhere within the text message. To mention your bot itself simply use `<@ME>`.
+- **`type`**: *enum*. Type of the message, one of the following `text`, `file`, `link`, `picture`, `video`, `event`, `location` or `custom`.
+- **`title`**: *string*, **optional**. Title of a shared location or link, if `type` of the message is `location` or `link`
+- **`text`**: *string*, **optional**. Text message content or a shared link description, if `type` of the message is `link`. If you want to mention a user, use the construction `<@USERID>` anywhere within the text message. To mention your bot itself simply use `<@ME>`.
 - **`url`**: *url string*, **optional**. URL of video, photo, link or file.
 - **`latitude`**: *number*, **optional**. Latitude of a location shared. Only for messages with type `location`.
 - **`longitude`**: *number*, **optional**. Longitude of a location shared. Only for messages with type `location`.
 - **`suggestions`**: *array of strings*. A set of quick reply options for the user (custom keyboard).
-- **`token`**: *token string*. **optional**. It's a required field in case you're using websockets. In case of HTTP API, please, use `Authorization` header.
+- **`token`**: *token string*, **optional**. It's a required field in case you're using websockets. In case of HTTP API, please, use `Authorization` header.
+- **`message`**: *object*, **optional**. Required only if message `type` is `custom`. Contains message payload in a platform-specific format, e.g. send a Messenger's receipt template message, which is not supported by Botcamp message types. See more in [Custom Messages](#custom-messages) section.
 
 ### <a name="sending-text-messages"></a>Text Messages
 
@@ -327,6 +390,19 @@ Pass a link you want to share within `url` property:
 {
   "channel": "FKVF9KTZ",
   "type": "link",
+  "url": "https://www.facebook.com"
+}
+```
+
+```javascript
+// sending a link with title and description
+// POST https://api.botcamp.ai/
+// Authorization: Bearer ${yourBotToken}
+{
+  "channel": "FKVF9KTZ",
+  "type": "link",
+  "title": "Facebook",
+  "text": "A World's Leading Social Network",
   "url": "https://www.facebook.com"
 }
 ```
@@ -380,7 +456,7 @@ Pass a link you want to share within `url` property:
   "channel": "FKVF9KTZ",
   "user": "XFD7KDX0",
   "type": "location",
-  "text": "Bakers and Roasters",
+  "title": "Bakers and Roasters",
   "latitude": 4.9167593510755,
   "longitude": 52.362026792616,
   "mentions": [],
@@ -390,7 +466,7 @@ Pass a link you want to share within `url` property:
 }
 ```
 
-### Custom keyboards
+### Custom Keyboards
 
 To add a custom keyboard to the message, `suggestions` property should be specified within a message payload (works for any message type). It should contain a set of strings, that represent the options for a custom keyboard. This functionality works for all platforms, including a fallback for Slack.
 
@@ -408,6 +484,59 @@ To add a custom keyboard to the message, `suggestions` property should be specif
 
 Botcamp utilizes [quick replies](https://developers.facebook.com/docs/messenger-platform/send-api-reference/quick-replies) for Facebook Messenger, [ReplyKeyboardMarkup](https://core.telegram.org/bots/api#replykeyboardmarkup) for Telegram, [suggested keyboards](https://dev.kik.com/#/docs/messaging#keyboards) for Kik and a fallback with a text message with options for Slack.
 
+### Custom Messages
+
+There is no limitation in only message types Botcamp supports. You are allowed to send custom messages for any platform. To do that specify message `type` as `custom` and add `message` property with an outgoing message in a format of the platform you're targeting.
+
+```javascript
+// sending a generic template message to messenger as a custom message
+// POST https://api.botcamp.ai/
+// Authorization: Bearer ${yourBotToken}
+{
+  "type": "custom",
+  "message": {
+
+    // messenger-specific message format
+    "recipient": { "id": "826771253098362" },
+    "message":{
+      "attachment": {
+        "type": "template",
+        "payload": {
+          "template_type": "generic",
+          "elements": [{
+            "title": "Welcome to Peter\'s Hats",
+            "item_url": "https://petersfancybrownhats.com",
+            "image_url": "https://petersfancybrownhats.com/company_image.png",
+            "subtitle": "We\'ve got the right hat for everyone.",
+            "buttons": [{
+                "type": "web_url",
+                "url": "https://petersfancybrownhats.com",
+                "title": "View Website"
+            }]
+          }]
+        }
+      }
+    }
+
+  }
+}
+```
+
+## Channels API
+
+To get more information about the channel of a message, which could be a group chat or a direct one, make a `GET` request to `https://channel.botcamp.ai/${channelId}`. Do not forget to add a Botcamp token to `Authorization` header.
+
+```javascript
+// getting channel information
+// GET https://channel.botcamp.ai/CGJ9KIX1
+// Authorization: Bearer ${yourBotToken}
+{
+  "id": "CGJ9KIX1",
+  "platform": "kik",
+  "from": "johndoe",
+  "chatId": "c9ca9a079e8db938394766e61cf92e9e78930e10f056cef9b61142c3e5af0e48"
+}
+```
 
 ## Users API
 
@@ -420,6 +549,8 @@ Send `GET` request to `https://user.botcamp.ai/${userId}` and do not forget to a
 // GET https://user.botcamp.ai/XFD7KDX0
 // Authorization: Bearer ${yourBotToken}
 {
+  "id": "XFD7KDX0",
+  "platform": "telegram",
   "username": "hoxyfoxy",
   "firstname": "John",
   "lastname": "Doe",

@@ -533,8 +533,14 @@ To get more information about the channel of a message, which could be a group c
 {
   "id": "CGJ9KIX1",
   "platform": "kik",
-  "from": "johndoe",
-  "chatId": "c9ca9a079e8db938394766e61cf92e9e78930e10f056cef9b61142c3e5af0e48"
+  "members": 1,
+  "diredct": true,
+  "props": {
+    // platform-specific properties
+  },
+  "meta": {
+    // original response from platform API
+  }
 }
 ```
 
@@ -555,7 +561,13 @@ Send `GET` request to `https://user.botcamp.ai/${userId}` and do not forget to a
   "firstname": "John",
   "lastname": "Doe",
   "email": "john@doe.com",
-  "image": "https://files.botcamp.ai/JGFY25FX"
+  "image": "https://files.botcamp.ai/JGFY25FX",
+  "props": {
+    // platform-specific properties
+  },
+  "meta": {
+    // original response from platform API
+  }
 }
 ```
 

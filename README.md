@@ -60,7 +60,7 @@ To configure your bot and to get it online on all the platforms you need to send
 }
 ```
 
-- **`protocol`**: *string*. The protocol you are going to use, `ws` for Websocket api or `http` for REST API.
+- **`protocol`**: *string*. The protocol you are going to use, `ws` for Websocket API or `http` for REST API.
 - **`webhook`**: *string*, **optional in case of protocol='ws'**. Should contain your bot server webhook URL. A request to this URL will be sent each time we receive any message from your users. Required only if `protocol` is `http`.
 - **`meta`**: *boolean*, **optional, false by default**. Defines whether to include meta information into a message or not. Meta information contains original raw message received from the platform, user and channel properties. Set this option to `true` in case your bot uses any platform-specific message types Botcamp does not support yet.
 

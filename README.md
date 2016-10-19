@@ -30,23 +30,25 @@
 
 ## Getting Started
 
-First of all, you need to create and configure a bot using [Botcamp App](http://app.botcamp.ai/). Right after it, you'll get a token for a newly created bot to communicate with Botcamp platform.
+The first step is to create and configure a bot using [Botcamp App](http://app.botcamp.ai/). You will receive a token to communicate with Botcamp platform for your newly created bot.
 
-You have a choice of two different ways on how to communicate with our platform — HTTP API or Websockets. Please, keep in mind that these are alternative approaches, that cannot be used together.
+You have a choice of two different ways of interaction with our platform — REST API or Websocket API. Keep in mind that these are incompatible approaches, that cannot be used at the same time.
+
+For the time being REST API is the preferable way to interact with Botcamp.
 
 ## Request Authorization
 
-Each HTTP-request to Botcamp API should contain your bot token within `Authorization` header property.
+Each HTTP-request to Botcamp REST API should contain your bot token within `Authorization` HTTP header.
 
 ```
   Authorization: Bearer ${yourBotToken}
 ```
 
-In case websockets are being used instead of HTTP, please, send us your bot token together with a payload object within `token` property.
+For clients using websocket API bot token has to be sent within a payload object in `token` property.
 
 ## Configuring your bot
 
-To configure your bot and to get it online on all the platforms  you need to send a `POST` request to `http://api.botcamp.ai/hi` with the following payload:
+To configure your bot and to get it online on all the platforms you need to send a `POST` request to `http://api.botcamp.ai/hi` with the following payload:
 
 ```javascript
 // POST https://api.botcamp.ai/hi
@@ -58,9 +60,9 @@ To configure your bot and to get it online on all the platforms  you need to sen
 }
 ```
 
-- **`protocol`**: *string*. Protocol you are going to use, `ws` or `http`.
-- **`webhook`**: *string*, **optional in case of protocol='ws'**. Should contain an URL of your bot server webhook, that will be triggered each time we receive any message from your users. Required only if `protocol` is `http`.
-- **`meta`**: *boolean*, **optional, false by default**. Defines whether to include meta information into a message or not. Meta information contains an initial message in the format of the platform, user and channel properties. Keep it turned on in case your bot is going to use any platform-specific message types Botcamp does not support yet.
+- **`protocol`**: *string*. The protocol you are going to use, `ws` for Websocket API or `http` for REST API.
+- **`webhook`**: *string*, **optional in case of protocol='ws'**. Should contain your bot server webhook URL. A request to this URL will be sent each time we receive any message from your users. Required only if `protocol` is `http`.
+- **`meta`**: *boolean*, **optional, false by default**. Defines whether to include meta information into a message or not. Meta information contains original raw message received from the platform, user and channel properties. Set this option to `true` in case your bot uses any platform-specific message types Botcamp does not support yet.
 
 Depending on the protocol chosen, the server responses with an object which contains URL to connect or post messages to:
 
@@ -86,16 +88,16 @@ In case of websockets:
 
 ## Receiving Messages
 
-Botcamp transforms incoming messages from all the platforms, and unifies their format. Apart from the important information, you receive some helper properties to ease your work.
+Botcamp transforms incoming messages from all the platforms into a single unified format. Along with the important information, some additional helpful properties to ease your work.
 
 - **`platform`**: *platform string*. `slack`, `kik`, `telegram` or `messenger`.
-- **`channel`**: *channel id string*. Channel id, where channel is a user or group of users.
-- **`user`**: *user id string*. User id, where user is the user, who sends a message, uploads a file, or initiates an event.
-- **`type`**: *enum*. Type of the message, one of the following `text`, `file`, `link`, `picture`, `video`, `location` or `event`.
-- **`text`**: *string*, **optional**. Text message content or event type (if `type` of the message is `event`). Mentions of the users appear within the text message as `<@USERID>`. Mentions of your bot are marked as `<@ME>`.
+- **`channel`**: *channel id string*. Unique identifier of the conversation with user or group of users.
+- **`user`**: *user id string*. Unique identifier of the user interacting with the bot (sending a message, uploading a file, or initiating an event).
+- **`type`**: *enum*. Type of the message. Will be one of the following: `text`, `file`, `link`, `picture`, `video`, `location` or `event`.
+- **`text`**: *string*, **optional**. Text message content or event type (if `type` of the message is `event`). All occurrences of user names within the text message are replaced with `<@USERID>`. Your bot name occurrences are replaced with `<@ME>`.
 - **`title`**: *string*, **optional**. Location title.
-- **`url`**: *url string*, **optional**. URL of video, photo, link or file.
-- **`mentions`**: *array of user id strings*. Array of the user ids mentioned in the message. Doesn't contain your bot id. If the bot was mentioned, see `mentioned` field.
+- **`url`**: *url string*, **optional**. URL of video, photo, link, or file.
+- **`mentions`**: *array of user id strings*. An array of the user ids mentioned in the message. Doesn't contain your bot id (See `mentioned` field).
 - **`mentioned`**: *boolean*. Determines whether bot was mentioned in the message.
 - **`direct`**: *bool*. True if it's a direct message to your bot.
 - **`timestamp`**: *timestamp*. In milliseconds.
@@ -124,7 +126,7 @@ Example of the incoming message (Botcamp makes a call to your bot's webhook or w
 
 ### Mentions
 
-Botcamp provides you with the list of users mentioned in a message (`mentions` property of an incoming message, see [messages format](#messages) for more information), as well as with the information whether your bot is being mentioned or not (`mentioned` property). Your bot username is replaced with `<@ME>` placeholder, other users are represented in a format of `<@USERID>`, e.g. `<@YFD6F8X0>`. See [Users API](#users-api)) on how to retrieve the information about a specific user.
+Botcamp provides you with the list of users mentioned in a message (`mentions` property of an incoming message, see [messages format](#messages) for more information), as well as with the information whether your bot was mentioned or not (`mentioned` property). Your bot name is replaced with `<@ME>` placeholder, other users are represented in a format of `<@USERID>`, e.g. `<@YFD6F8X0>`. See [Users API](#users-api)) on how to retrieve the information about a specific user.
 
 ```javascript
 // receiving a text message with mentions
@@ -143,7 +145,7 @@ Botcamp provides you with the list of users mentioned in a message (`mentions` p
 
 ### Links
 
-Remember, that `link` message doesn't contain `text` property. It has `url` instead.
+Important: `link` message doesn't contain a `text` property. It has `url` instead.
 
 ```javascript
 // receiving a link message
@@ -232,9 +234,9 @@ Remember, that `link` message doesn't contain `text` property. It has `url` inst
 
 ### Events
 
-Events are a special type of *only incoming messages*. It helps your bot better to understand the context of what's happening, e.g. user has left the channel or started typing something.
+Events are a special type of *incoming messages*. This provides a context of what's happening to your bot, e.g. a user has left the channel or started typing something.
 
-Botcamp now supports the following types of the events:
+Botcamp at this moment supports the following types of the events:
 - **`start`**: start of the conversation, your bot was added
 - **`join`**: user joined a channel
 - **`leave`**: user left a channel
@@ -294,13 +296,13 @@ Botcamp now supports the following types of the events:
 
 ### Metadata
 
-In order to receive additional information right together with Botcamp message payload, you've must been specified it during your bot configuration, setting `meta` to `true` (see [Configuring your bot](#configuring-your-bot) section).
+In order to receive additional information with Botcamp message payload, you should set `meta` to `true` during your bot configuration (see [Configuring your bot](#configuring-your-bot) section).
 
-In this case each message payload is going to be extended with a `meta` property, which contains:
+When meta information is enabled incomming messages payload is extended with a `meta` property, which contains:
 
-- **`message`**: *object*. Unmodified incoming message in the format of the platform.
+- **`message`**: *object*. Original raw incoming message in the format of the platform.
 - **`channel`**: *object*. Additional channel properties such as `chatId` for kik or `channel` for slack. To get more information about the channels use [Channels API](#channels-api).
-- **`user`**: *object*. Additional user properties such as `user` for slack or `username` for telegram. To get more information about the users use [Users API](#users-api).
+- **`user`**: *object*. Additional user properties such as `user` for slack or `username` for Telegram. To get more information about the users use [Users API](#users-api).
 
 ```javascript
 // receiving a text message with metadata
@@ -341,12 +343,12 @@ Outgoing messages should contain the next set of fields:
 - **`channel`**: *channel id string*. Channel id, where channel is a user or group of users.
 - **`type`**: *enum*. Type of the message, one of the following `text`, `file`, `link`, `picture`, `video`, `event`, `location` or `custom`.
 - **`title`**: *string*, **optional**. Title of a shared location or link, if `type` of the message is `location` or `link`
-- **`text`**: *string*, **optional**. Text message content or a shared link description, if `type` of the message is `link`. If you want to mention a user, use the construction `<@USERID>` anywhere within the text message. To mention your bot itself simply use `<@ME>`.
+- **`text`**: *string*, **optional**. Text message content or a shared link description, if `type` of the message is `link`. If you want to mention a user, add `<@USERID>` anywhere within the text message. To mention your bot use `<@ME>`.
 - **`url`**: *url string*, **optional**. URL of video, photo, link or file.
 - **`latitude`**: *number*, **optional**. Latitude of a location shared. Only for messages with type `location`.
 - **`longitude`**: *number*, **optional**. Longitude of a location shared. Only for messages with type `location`.
 - **`suggestions`**: *array of strings*. A set of quick reply options for the user (custom keyboard).
-- **`token`**: *token string*, **optional**. It's a required field in case you're using websockets. In case of HTTP API, please, use `Authorization` header.
+- **`token`**: *token string*, **optional**. It's a required field in case you're using websocket API. In case of REST API, use `Authorization` header.
 - **`message`**: *object*, **optional**. Required only if message `type` is `custom`. Contains message payload in a platform-specific format, e.g. send a Messenger's receipt template message, which is not supported by Botcamp message types. See more in [Custom Messages](#custom-messages) section.
 
 ### <a name="sending-text-messages"></a>Text Messages
@@ -486,7 +488,8 @@ Botcamp utilizes [quick replies](https://developers.facebook.com/docs/messenger-
 
 ### Custom Messages
 
-There is no limitation in only message types Botcamp supports. You are allowed to send custom messages for any platform. To do that specify message `type` as `custom` and add `message` property with an outgoing message in a format of the platform you're targeting.
+Your bot is not limited to message types supported by Botcamp. You are allowed to send custom messages to any platform.
+Specify message `type` as `custom` and add `message` property with an outgoing message in a format of the platform you're targeting.
 
 ```javascript
 // sending a generic template message to messenger as a custom message
@@ -524,7 +527,7 @@ There is no limitation in only message types Botcamp supports. You are allowed t
 
 ## Channels API
 
-To get more information about the channel of a message, which could be a group chat or a direct one, make a `GET` request to `https://channel.botcamp.ai/${channelId}`. Do not forget to add a Botcamp token to `Authorization` header.
+To get more information about the channel of a message (could be a group chat or a direct one) make a `GET` request to `https://channel.botcamp.ai/${channelId}`. Don't forget to add a Botcamp token to `Authorization` HTTP header.
 
 ```javascript
 // getting channel information
@@ -546,9 +549,9 @@ To get more information about the channel of a message, which could be a group c
 
 ## Users API
 
-Botcamp provides an API to learn more about your users. Passing user id, you have received in any message, you can access such information like first name, last name, email and much more. Of course, it strictly depends on the type of the messenger being used to send the message.
+Botcamp provides an API for retrieving platform-specific information about your users. Passing user id you have received with any incoming message you can access information like first name, last name, email and much more. Of course, it depends on the type of the messenger being used to send the message.
 
-Send `GET` request to `https://user.botcamp.ai/${userId}` and do not forget to add your token to `Authorization` header. We do not store any user information and provide it as a proxy, so please be sure you store it in some way on your side.
+Send `GET` request to `https://user.botcamp.ai/${userId}` and do not forget to add your token to `Authorization` header. We do not store any user information and provide data by acting as a proxy to platform-specific API. If you need to store user data please do so in some way on your side.
 
 ```javascript
 // getting user information
@@ -573,10 +576,10 @@ Send `GET` request to `https://user.botcamp.ai/${userId}` and do not forget to a
 
 ## Files API
 
-Probably you have already noticed, that for security reasons Botcamp hides all the incoming URLs behind its own proxy file server. Same as for the users we do not store any files on our servers. We always include a full URL to all files in any message in the format of `https://file.botcamp.ai/${fileId}`.
+As you might have already noticed, for security reasons Botcamp hides all the incoming URLs behind its own proxy file server. We do not store any files on our servers. We always include a full URL to all files in any message in the format of `https://file.botcamp.ai/${fileId}`.
 
 Do not forget to add your token to `Authorization` header.
 
 ## Questions, Feature Requests and Bug Reports
 
-If you have a bug report, a feature request in your mind, or just stuck somewhere and need help, please, [file a ticket](https://github.com/BotcampAI/support). We will be happy to help you.
+If you have a bug report, a feature request, or just stuck somewhere and need help, please, [file a ticket](https://github.com/BotcampAI/support). We will be happy to help you.

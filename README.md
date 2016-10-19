@@ -34,6 +34,8 @@ The first step is to create and configure a bot using [Botcamp App](http://app.b
 
 You have a choice of two different ways of interaction with our platform — REST API or Websocket API. Keep in mind that these are incompatible approaches, that cannot be used at the same time.
 
+For the time being REST API is the preferable way to interact with Botcamp.
+
 ## Request Authorization
 
 Each HTTP-request to Botcamp REST API should contain your bot token within `Authorization` HTTP header.
